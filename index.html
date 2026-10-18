@@ -124,13 +124,14 @@
     }
 
     main {
-      padding: 12px 16px 40px;
-      max-width: 1300px;
+      padding: 12px 16px 12px;
+      max-width: 1440px;
       margin: 0 auto;
     }
 
     .wrap {
-      overflow-x: auto;
+      overflow: auto;
+      max-height: calc(100dvh - var(--hh, 170px) - 26px);
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -151,6 +152,7 @@
     th {
       position: sticky;
       top: 0;
+      z-index: 1;
       background: var(--accbg);
       cursor: pointer;
       white-space: nowrap;
@@ -194,11 +196,6 @@
       border-radius: 50%;
       background: var(--c);
       margin-right: 6px;
-    }
-
-    th.w {
-      white-space: normal;
-      min-width: 110px;
     }
 
     td.rf {
@@ -340,13 +337,12 @@
         <thead>
           <tr>
             <th class="x" aria-label="Details"></th>
-            <th data-k="1">Shelf</th>
             <th data-k="2">Bin</th>
             <th data-k="3">Product</th>
             <th data-k="4">Size</th>
             <th data-k="5">Ref #</th>
-            <th data-k="6" class="w">Til (Target Inventory Level)</th>
-            <th data-k="7" class="w">Qty to dispense 30d/s</th>
+            <th data-k="6">Target Inventory Level</th>
+            <th data-k="7">Qty to dispense for 30d/s</th>
             <th data-k="0">Category</th>
           </tr>
         </thead>
@@ -433,7 +429,6 @@
           <tr class="det" id="d${r.id}">
             <td class="x"></td>
             <td></td>
-            <td></td>
             <td colspan="2"><span class="lbl">Rationale</span>${r[11] ? esc(r[11]) : '<span class="none">—</span>'}</td>
             <td><span class="lbl">Assumed pack</span>${r[9] ? esc(r[9]) : '<span class="none">—</span>'}</td>
             <td><span class="lbl">Suggested min</span>${sugCell}</td>
@@ -446,7 +441,6 @@
           return `
           <tr class="main${o ? " open" : ""}" data-id="${r.id}">
             <td class="x"><button class="chev" type="button" aria-expanded="${o}" aria-controls="d${r.id}" aria-label="${o ? "Hide" : "Show"} details">${CHEV}</button></td>
-            <td>${hl(r[1], terms)}</td>
             <td class="bin">${r[2] ? `<span class="b" style="--c:var(--k${ci(r[0])})">${hl(r[2], terms)}</span>` : '<span class="none">—</span>'}</td>
             <td>${cell(r[3], terms)}</td>
             <td>${cell(r[4], terms)}</td>
@@ -498,6 +492,9 @@
       });
 
       $("q").addEventListener("input", render);
+      const fit = () => document.documentElement.style.setProperty("--hh", document.querySelector("header").offsetHeight + "px");
+      new ResizeObserver(fit).observe(document.querySelector("header"));
+      fit();
       render();
     }
   </script>
