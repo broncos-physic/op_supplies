@@ -341,7 +341,7 @@
             <th data-k="3">Product</th>
             <th data-k="4">Size</th>
             <th data-k="5">Ref #</th>
-            <th data-k="6">Target Inventory Level</th>
+            <th data-k="6" title="Enough for 3 patients for 7 days in whole dispensing units, and never less than the 30-day dispense quantity">Target Inventory Level</th>
             <th data-k="7">Qty to dispense for 30d/s</th>
             <th data-k="0">Category</th>
           </tr>
@@ -356,6 +356,7 @@
     // Item data lives in data.csv (same folder). Columns are matched by header name:
     //   category, shelf, bin, product, size, ref, til, qty_30d, search_extra,
     //   assumed_pack, suggested_min, rationale
+    // suggested_min covers 3 patients for 7 days in whole dispensing units, and is never below qty_30d.
     // The last three show in the expandable detail row and are not searched.
     // A new category needs its own --kN color above (categories are numbered in order of first appearance).
     const COLS = ["category", "shelf", "bin", "product", "size", "ref", "til", "qty_30d", "search_extra",
@@ -432,7 +433,7 @@
             <td colspan="2"><span class="lbl">Rationale</span>${r[11] ? esc(r[11]) : '<span class="none">—</span>'}</td>
             <td><span class="lbl">Assumed pack</span>${r[9] ? esc(r[9]) : '<span class="none">—</span>'}</td>
             <td><span class="lbl">Suggested min</span>${sugCell}</td>
-            <td><span class="lbl">Basis</span>3 patients × 7 days, whole units</td>
+            <td></td>
             <td></td>
           </tr>`;
         };
@@ -445,8 +446,8 @@
             <td>${cell(r[3], terms)}</td>
             <td>${cell(r[4], terms)}</td>
             <td class="rf">${cell(r[5], terms)}</td>
-            <td>${hl(r[6], terms)}</td>
-            <td>${hl(r[7], terms)}</td>
+            <td>${cell(r[6], terms)}</td>
+            <td>${cell(r[7], terms)}</td>
             <td class="cat">${esc(r[0])}</td>
           </tr>${o ? det(r) : ""}`;
         }).join("");
