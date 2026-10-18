@@ -18,13 +18,13 @@ Diabetic,,D 16,TruSteel Infusion Set,,1002835,3 boxes (30),2 boxes (20),,box of 
 Diabetic,,D 17,Alpha-Stim Conduction Solutionn,250mL,SL250,3 bottles,1 bottle,,bottle,3 bottles,A few drops per session; one bottle lasts months.
 Feeding,,F 1,Kangaroo Omni Feeding Set,,B10FF,3 cases (90),1 case (30),,case of 30,3 cases (90),Pump set changed every 24 hours.
 Feeding,,F 2,EnFit Gravity Feeding Set,1000mL,VED-034,3 cases (90),1 case (30),,case of 30,3 cases (90),Gravity bag changed every 24 hours.
-Feeding,,F 3,EnFit Transition Connector,,ENFIT1000TC,3,4,,each,3,Connector replaced about weekly.
-Feeding,,F 4,G-Tube Connector,,ENFIT1010GC,3,4,,each,3,Connector replaced about weekly.
+Feeding,,F 3,EnFit Transition Connector,,ENFIT1000TC,4,4,,each,4,Connector replaced about weekly.
+Feeding,,F 4,G-Tube Connector,,ENFIT1010GC,4,4,,each,4,Connector replaced about weekly.
 Feeding,,F 5,EnFit Enteral Syringe,60mL,,3 boxes (90),1 box (30),,box of 30,3 boxes (90),"Washed and reused ~1 day, so one per day."
 Feeding,,F 6,EnFit Enteral Syringe,12mL,412SE,1 box (100),30,,box of 100,1 box (100),"One med syringe per day, washed between doses; sell loose."
-Feeding,,F 7,Catheter Adapt,,2219,3,4,,each,3,Adapter replaced about weekly.
-Feeding,,F 8,5-in-1 connect,,511,3,4,,each,3,Connector replaced about weekly.
-Feeding,,F 9,Bard Extension Tube with Connector,5/16in ID x 18in,4A4194,3,4,,each,3,Extension tube replaced about weekly with cleaning wear.
+Feeding,,F 7,Catheter Adapt,,2219,4,4,,each,4,Adapter replaced about weekly.
+Feeding,,F 8,5-in-1 connect,,511,4,4,,each,4,Connector replaced about weekly.
+Feeding,,F 9,Bard Extension Tube with Connector,5/16in ID x 18in,4A4194,4,4,,each,4,Extension tube replaced about weekly with cleaning wear.
 Ostomy,,O 1,ConvaTec flat waver,"1-3/4"" flange",411802,6 Boxes,1 box (10),,box of 10,3 boxes (30),Two-piece wafer worn ~3-4 days = ~9/month.
 Ostomy,,O 2,ConvaTec flat waver,"2-1/4"" flange",411804,6 Boxes,1 box (10),,box of 10,3 boxes (30),Two-piece wafer worn ~3-4 days = ~9/month.
 Ostomy,,O 3,ConvaTec flat waver,"2-3/4"" flange",411806,6 Boxes,1 box (10),,box of 10,3 boxes (30),Two-piece wafer worn ~3-4 days = ~9/month.
@@ -53,7 +53,7 @@ Ostomy,,O 25,ConvaTec stomahesive Powder,1oz,025510,5 ea,1 bottle,,bottle,3 bott
 Ostomy,,O 26,Eakin Cohesive Seal,"2""",839002,4 Boxes,1 box (10),,box of 10,3 boxes (30),One seal per wafer change.
 Ostomy,,O 27,ConvaTec Ostomy Belt,106cm,175507,5 ea,1,,each,3,Reusable; replaced every few months.
 Ostomy,,O 28,Coloplast Ostomy Belt,"49""",4220,1 ea,1,,each,3,Reusable; replaced every few months.
-Ostomy,,O 29,No Rinse Foam clen,8 oz,MSC09108,3 bottles,1 bottle,,bottle,3 bottles,Daily skin cleansing uses about a bottle a month.
+Ostomy,,O 29,No Rinse Foam Cleanser,8 oz,MSC09108,3 bottles,1 bottle,,bottle,3 bottles,Daily skin cleansing uses about a bottle a month.
 Ostomy,,O 30,Spray cleanser,8 oz,MSC095206,3 bottles,1 bottle,,bottle,3 bottles,Daily skin cleansing uses about a bottle a month.
 Ostomy,,O 31,OstoFresh Ostomy deoderent,8 oz,68002,3 bottles,1 bottle,,bottle,3 bottles,A few drops per pouch emptying; lasts over a month.
 Ostomy,,O 32,ConvaTec aloe vesta Ointment,8 oz,,3 tubes,1 tube,,tube,3 tubes,Thin layer to skin daily; ~a month per 8 oz.
@@ -66,43 +66,43 @@ Ostomy,,O 38,Skintegrity Wound cleanser,16 oz,MSC6016EP,3 bottles,1 bottle,,bott
 Syringes & Needles,,S 1,LureLock Syringe,1mL,,1 box (100),30,,box of 100,1 box (100),Average ~1/day for oral/flush/med use; sell loose.
 Syringes & Needles,,S 2,LuerLock Syringe,3mL,,1 box (100),30,,box of 100,1 box (100),Average ~1/day for oral/flush/med use; sell loose.
 Syringes & Needles,,S 3,LureLock Syringe,5mL,,1 box (100),30,,box of 100,1 box (100),Average ~1/day for oral/flush/med use; sell loose.
-Syringes & Needles,,S 4,Diabetic Syringe with Needles,"0.5mL 30G 12.7mm 1/2""",,3 boxes (300),1 box (100),,box of 100,3 boxes (300),Insulin user ~3 injections/day; give the box.
-Syringes & Needles,,S 5,Diabetic syringe with Needles,"1mL 30G 12.7mm 1/2""",,3 boxes (300),1 box (100),,box of 100,3 boxes (300),Insulin user ~3 injections/day; give the box.
+Syringes & Needles,,S 4,Diabetic Syringe with Needles,"0.5mL 30G 12.7mm 1/2""",,3 boxes (300),,,box of 100,3 boxes (300),Quantity depends on insulin dosing frequency; stock levels assume ~3 injections/day.
+Syringes & Needles,,S 5,Diabetic syringe with Needles,"1mL 30G 12.7mm 1/2""",,3 boxes (300),,,box of 100,3 boxes (300),Quantity depends on insulin dosing frequency; stock levels assume ~3 injections/day.
 Syringes & Needles,,S 6,LuerLock Syringe,10mL,,1 box (100),30,,box of 100,1 box (100),Average ~1/day for flushes/irrigation; sell loose.
 Syringes & Needles,,S 7,LuerLock Syringe,20mL,,1 box (50),30,,box of 50,1 box (50),Average ~1/day for flushes/irrigation; sell loose.
 Syringes & Needles,,S 8,LuerLock Syringe,30ml,,1 box (50),30,,box of 50,1 box (50),Average ~1/day for flushes/irrigation; sell loose.
-Syringes & Needles,,S 9,Syringe with Safety Needles,"1mL 29G 13mm 1/2""",,1 box (100),10,,box of 100,1 box (100),Typical SC/IM med is weekly to a few times a week.
-Syringes & Needles,,S 10,Syringe with Safety Needles,"1mL 25G 1""",,1 box (100),10,,box of 100,1 box (100),Typical SC/IM med is weekly to a few times a week.
-Syringes & Needles,,S 11,Syringe with Safety Needles,"1mL 27G 1/2""",,1 box (100),10,,box of 100,1 box (100),Typical SC/IM med is weekly to a few times a week.
-Syringes & Needles,,S 12,Needles,"18G 1""",,1 box (100),10,,box of 100,1 box (100),Draw-up needle for weekly-ish injections; sell loose.
-Syringes & Needles,,S 13,Needles,"21G 1""",,1 box (100),10,,box of 100,1 box (100),Weekly-ish injections; sell loose.
-Syringes & Needles,,S 14,Needles,"21G 1.5""",,1 box (100),10,,box of 100,1 box (100),Weekly-ish injections; sell loose.
-Syringes & Needles,,S 15,Needles,"22G 1.5""",,1 box (100),10,,box of 100,1 box (100),Weekly-ish injections; sell loose.
-Syringes & Needles,,S 16,Needles,"25G 5/8""",,1 box (100),10,,box of 100,1 box (100),Weekly-ish injections; sell loose.
-Syringes & Needles,,S 17,Needles,"25G 1""",,1 box (100),10,,box of 100,1 box (100),Weekly-ish injections; sell loose.
-Syringes & Needles,,S 18,Needles,"25G 1.5""",,1 box (100),10,,box of 100,1 box (100),Weekly-ish injections; sell loose.
-Syringes & Needles,,S 19,Needles,"27G 1.5""",,1 box (100),10,,box of 100,1 box (100),Weekly-ish injections; sell loose.
-Syringes & Needles,,S 20,Syringe with Needles,"3mL 18G 1.5""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
-Syringes & Needles,,S 21,Syringe with Needles,"3mL 20G 1""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
-Syringes & Needles,,S 22,Syringe with Needles,"3mL 20G 1.5""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
-Syringes & Needles,,S 23,Syringe with Needles,"3mL 21G 1""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
-Syringes & Needles,,S 24,Syringe with Needles,"3mL 21G 1.5""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
-Syringes & Needles,,S 25,Syringe with Needles,"3mL 22G 1.5""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
+Syringes & Needles,,S 9,Syringe with Safety Needles,"1mL 29G 13mm 1/2""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 10,Syringe with Safety Needles,"1mL 25G 1""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 11,Syringe with Safety Needles,"1mL 27G 1/2""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 12,Needles,"18G 1""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 13,Needles,"21G 1""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 14,Needles,"21G 1.5""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 15,Needles,"22G 1.5""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 16,Needles,"25G 5/8""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 17,Needles,"25G 1""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 18,Needles,"25G 1.5""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 19,Needles,"27G 1.5""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 20,Syringe with Needles,"3mL 18G 1.5""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 21,Syringe with Needles,"3mL 20G 1""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 22,Syringe with Needles,"3mL 20G 1.5""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 23,Syringe with Needles,"3mL 21G 1""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 24,Syringe with Needles,"3mL 21G 1.5""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 25,Syringe with Needles,"3mL 22G 1.5""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
 Syringes & Needles,,S 26,Catheter Tip Syringe,50mL,,3 boxes (90),1 box (30),,box of 30,3 boxes (90),Irrigation/bolus syringe replaced about daily.
 Syringes & Needles,,S 27,LuerLock Syringe,50mL,,1 box (30),30,,box of 30,1 box (30),Large-volume flush/draw syringe ~1/day.
-Syringes & Needles,,S 28,Syringe with Needles,"3mL 23G 1""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
-Syringes & Needles,,S 29,Syringe with Needles,"3mL 25G 5/8""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
-Syringes & Needles,,S 30,Syringe with Needles,"3mL 25G 1""",,1 box (100),10,,box of 100,1 box (100),IM injection weekly to a few times a week.
+Syringes & Needles,,S 28,Syringe with Needles,"3mL 23G 1""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 29,Syringe with Needles,"3mL 25G 5/8""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
+Syringes & Needles,,S 30,Syringe with Needles,"3mL 25G 1""",,1 box (100),,,box of 100,1 box (100),Quantity depends on the medication and dosing frequency; stock levels assume weekly-to-daily use.
 Trach,,T 1,Trach Cannula,6.5,6IC75,3 boxes (30),3 boxes (30),,box of 10,3 boxes (30),Disposable inner cannula changed daily.
 Trach,,T 2,Trach Cannula,7.5,6UN75A,3,1,,each,3,Outer tube changed about monthly.
-Trach,,T 3,Trach Tube Holder,,240,9,10,,each,9,Holder replaced every few days as it soils.
+Trach,,T 3,Trach Tube Holder,,240,10,10,,each,10,Holder replaced every few days as it soils.
 Trach,,T 4,Suction Catheter,12 FR,DYND40981,3 cases (300),1 case (100),,case of 100,3 cases (300),"Single-use, ~3 suctionings/day."
 Trach,,T 5,Suction Catheter,14 FR,37424,3 cases (300),1 case (100),,case of 100,3 cases (300),"Single-use, ~3 suctionings/day."
 Trach,,T 6,Trach Care Set,,35001,3 cases (90),1 case (30),,case of 30,3 cases (90),One stoma-care kit per day.
-Trach,,T 7,Suction Tubing,"3/16"" x 10ft",DYND50221,3,4,,each,3,Suction tubing changed weekly.
-Trach,,T 8,Suction Tubing,"3/16"" x 1-1/2ft",8888301507,3,4,,each,3,Suction tubing changed weekly.
-Trach,,T 9,Argyle Suction Tubing,"3/16"" x 6ft",8888301515,3,4,,each,3,Suction tubing changed weekly.
-Trach,,T 10,"Argyle Yankauer Bulb Tip, No Vent",,8888505016,3,4,,each,3,Yankauer rinsed and replaced weekly.
+Trach,,T 7,Suction Tubing,"3/16"" x 10ft",DYND50221,4,4,,each,4,Suction tubing changed weekly.
+Trach,,T 8,Suction Tubing,"3/16"" x 1-1/2ft",8888301507,4,4,,each,4,Suction tubing changed weekly.
+Trach,,T 9,Argyle Suction Tubing,"3/16"" x 6ft",8888301515,4,4,,each,4,Suction tubing changed weekly.
+Trach,,T 10,"Argyle Yankauer Bulb Tip, No Vent",,8888505016,4,4,,each,4,Yankauer rinsed and replaced weekly.
 Trach,,T 11,"Latex Tubing 1/4"" x 3/32""",,MDS19685,3 rolls,1 roll,,roll,3 rolls,Cut to length as needed; a roll lasts a month+.
 Trach,,T 12,Bubble Tubing,"1/4"" ID",DYND50230,3,2,,each,3,Aerosol tubing replaced every ~2 weeks.
 Trach,,T 13,Drain Sponges,"2"" x 2""",NON256001,1 box,60,,box of 70 (2/pk),1 box,Split sponge at the stoma changed ~twice daily.
@@ -151,7 +151,7 @@ Wound Care,,W 41,Petrolatum Gauze,3in x 18in,,3 boxes (150),1 box (50),,box of 5
 Wound Care,,W 42,Gauze Sponges,4in x 4in,3033,1 box (100),60,,box of 100,1 box (100),~2 per daily dressing change.
 Wound Care,,W 43,Gauze Sponges,4in x 4in,3033,1 box (100),60,,box of 100,1 box (100),Duplicate of W 42 (same ref 3033) — consolidate.
 Wound Care,,W 44,Vinyl Gloves,X-Large,,3 boxes (300),1 box (100),,box of 100,3 boxes (300),A few pairs per day for dressing changes; give the box.
-Wound Care,,W 45,Abdominal Pads Sterile,5in x 9in,9190A,1 box (25),30,,box of 25,1 box (25),One ABD pad per daily dressing on a draining wound.
+Wound Care,,W 45,Abdominal Pads Sterile,5in x 9in,9190A,2 boxes (50),30,,box of 25,2 boxes (50),One ABD pad per daily dressing on a draining wound.
 Wound Care,,W 46,Abdominal Pads Non-Sterile,12in x 16in,,3 packs (30),30,,pack of 10,3 packs (30),One large pad per day.
 Wound Care,,W 47,Abdominal Pads Non-Sterile,8in x 10in,,2 packs (40),30,,pack of 20,2 packs (40),One pad per day.
 Wound Care,,W 48,Sodium Chloride Irrigation,1000mL,2F7124,1 case (12),4 bottles,,case of 12,1 case (12),Opened bottle used for about a week of cleansing.
@@ -164,8 +164,8 @@ Nutrition,,Cab 8,Novasource Renal Strawberry,24 x 237 mL,,3 cases (72),3 cases (
 Nutrition,,Store,Ensure Plus Vanilla,24 x 237 mL,,3 cases (72),3 cases (72),store,case of 24,3 cases (72),Oral supplement ~2-3/day.
 Nutrition,,Cab 8,Ensure Surgery,24 x 237 mL,,3 cases (72),1 case (24),cabinet 8,case of 24,3 cases (72),"Pre-op course is ~3/day for 5-7 days, so one case per person."
 Nutrition,,Store,Ensure Plus Milk Chocolate,24 x 237 mL,,3 cases (72),3 cases (72),store,case of 24,3 cases (72),Oral supplement ~2-3/day.
-Nutrition,,Store,Jevity 1.5 Cal,24 x 237 mL,,6 cases (144),7 cases (168),store,case of 24,6 cases (144),Sole-source tube feeding ~5 cartons/day.
-Nutrition,,Store,Nutren 1.5,24 x 250mL,,6 cases (144),7 cases (168),store,case of 24,6 cases (144),Sole-source tube feeding ~5 cartons/day.
+Nutrition,,Store,Jevity 1.5 Cal,24 x 237 mL,,7 cases (168),7 cases (168),store,case of 24,7 cases (168),Sole-source tube feeding ~5 cartons/day.
+Nutrition,,Store,Nutren 1.5,24 x 250mL,,7 cases (168),7 cases (168),store,case of 24,7 cases (168),Sole-source tube feeding ~5 cartons/day.
 Nutrition,,Cab 8,Pro-Stat,887 mL,,3 bottles,2 bottles,cabinet 8,bottle,3 bottles,"30 mL 1-2x/day ≈ 1,350 mL/month."
 Nutrition,,Store,SimplyThick,1.6 L,,3 bottles,1 bottle,store,bottle,3 bottles,Pump gel; one bottle covers ~a month of thickened drinks.
 Nutrition,,Cab 8,LiquaCel,960 mL,,3 bottles,2 bottles,cabinet 8,bottle,3 bottles,"30 mL twice daily ≈ 1,800 mL/month."
@@ -176,12 +176,12 @@ Nutrition,,Cab 8,Pedialyte Adv Care Berry Frost,6 x 17 g,,6 boxes (36),5 boxes (
 Nutrition,,Cab 8,Boost Breeze Orange,24 x 237 mL,,3 cases (72),3 cases (72),cabinet 8,case of 24,3 cases (72),Clear-liquid supplement ~2/day.
 Nutrition,,Cab 8,ProCel Unflavored,285 g,,3 tubs,1 tub,cabinet 8,tub (~43 scoops),3 tubs,1-2 scoops/day; a tub lasts close to a month.
 IV,,I 1,Sodium Chloride Flush,100mL,00338-0553-18,1 case (64),30,,case of 64,1 case (64),~One 100 mL bag per day for dilution/flush; sell by count.
-IV,,I 2,Small Bore Extension Set,"12""",DYNDTN0003,3,4,,each,3,Extension set changed weekly with the dressing.
+IV,,I 2,Small Bore Extension Set,"12""",DYNDTN0003,4,4,,each,4,Extension set changed weekly with the dressing.
 IV,,I 3,Heparin Lock Flush 100 units/mL,5mL,306424,3 boxes (90),2 boxes (60),,box of 30,3 boxes (90),"Locked after each use, ~2/day."
-IV,,I 4,Home IV Set,92in,DYNDTN1522,21,30,,each,21,Administration set changed every 24 hours.
-IV,,I 5,Flow Rate Tubing,F500,F500,21,30,,each,21,Elastomeric/flow tubing used once per day.
-IV,,I 6,Flow Rate Tubing,F900,F900,21,30,,each,21,Elastomeric/flow tubing used once per day.
-IV,,I 7,Central Line PICC Maintenance Kit,,DT19540A,3,4,,each,3,PICC dressing changed weekly.
+IV,,I 4,Home IV Set,92in,DYNDTN1522,30,30,,each,30,Administration set changed every 24 hours.
+IV,,I 5,Flow Rate Tubing,F500,F500,30,30,,each,30,Elastomeric/flow tubing used once per day.
+IV,,I 6,Flow Rate Tubing,F900,F900,30,30,,each,30,Elastomeric/flow tubing used once per day.
+IV,,I 7,Central Line PICC Maintenance Kit,,DT19540A,4,4,,each,4,PICC dressing changed weekly.
 Urology,,U 1,Male External Catheter TruCath,29mm,EMEC29M,3 boxes (90),1 box (30),,box of 30,3 boxes (90),Condom catheter changed daily.
 Urology,,U 2,Male External Catheter BD Wideband,Large 35mm,6530-00-NIB-0068,1 box (100),30,,box of 100,1 box (100),Condom catheter changed daily.
 Urology,,U 3,Male External Catheter Bard Ultraflex,Large 36mm,6530-01-451-7662,1 box (100),30,,box of 100,1 box (100),Condom catheter changed daily.
@@ -193,17 +193,17 @@ Urology,,U 8,Bard Cunningham Incontinence Clamp,Regular,004053,3,1,,each,3,Reusa
 Urology,,U 9,Bard Cunningham Incontinence Clamp,Large,004052,3,1,,each,3,Reusable clamp; replaced every few months.
 Urology,,U 10,Dale Hold-In-Place Foley Catheter Holder Leg Band,,316,3,2,,each,3,"Washable band; one to wear, one to wash."
 Urology,,U 11,StatLock Catheter Holder,Foley / Multipurpose,FOL0102 / MP0120,1 box (25),4,,box of 25,1 box (25),Securement device changed weekly.
-Urology,,U 12,Rusch Catheterization System,14FR 1.5L,RLA-142-3,2 cases (100),120,,case of 50,2 cases (100),"Closed-system cath ~4x/day, single use."
-Urology,,U 13,Urinary Leg Bag,600mL,DYND12574,3,4,,each,3,Leg bag changed about weekly.
-Urology,,U 14,Urinary Leg Bag,562mL,150102,3,4,,each,3,Leg bag changed about weekly.
+Urology,,U 12,Rusch Catheterization System,14FR 1.5L,RLA-142-3,3 cases (150),120,,case of 50,3 cases (150),"Closed-system cath ~4x/day, single use."
+Urology,,U 13,Urinary Leg Bag,600mL,DYND12574,4,4,,each,4,Leg bag changed about weekly.
+Urology,,U 14,Urinary Leg Bag,562mL,150102,4,4,,each,4,Leg bag changed about weekly.
 Urology,,U 15,Urinary Bedside Bag,2L (2000mL),DYNC1674,3,2,,each,3,Night bag changed every ~2 weeks.
 Urology,,U 16,Urinary Bedside Bag,2L (2000mL),154002,3,2,,each,3,Night bag changed every ~2 weeks.
-Urology,,U 17,Intermittent Catheter Kit,1.5L,97164,2 cases (100),120,,case of 50,2 cases (100),"Closed-system cath ~4x/day, single use."
+Urology,,U 17,Intermittent Catheter Kit,1.5L,97164,3 cases (150),120,,case of 50,3 cases (150),"Closed-system cath ~4x/day, single use."
 Urology,,U 18,Foley Cath Tray,,1510PF,3,1,,each,3,Indwelling catheter changed about monthly.
 Urology,,U 19,Foley Cath Tray,,DNYC1815,3,1,,each,3,Indwelling catheter changed about monthly.
 Urology,,U 20,Surgilube,120.49g / 4.25oz,,3 tubes,1 tube,,tube,3 tubes,Small amount per cath; one tube lasts a month.
-Urology,,U A,BD Bard Rubber Utility Catheter,14FR,277714,7 boxes (84),120,,box of 12,7 boxes (84),"Intermittent cath ~4x/day, single use."
-Urology,,U A,BD Bard Rubber Utility Catheter,16FR,277716,7 boxes (84),120,,box of 12,7 boxes (84),"Intermittent cath ~4x/day, single use."
-Urology,,U B,BD Tiemann Catheter Coude Tip,14FR,010114,7 boxes (84),120,,box of 12,7 boxes (84),"Coude intermittent cath ~4x/day, single use."
-Urology,,U B,BD Tiemann Catheter Coude Tip,16FR,010116,7 boxes (84),120,,box of 12,7 boxes (84),"Coude intermittent cath ~4x/day, single use."
-Urology,,U C,Medline Catheter Vinyl,14FR,DYND10700,3 boxes (90),4 boxes (120),,box of 30,3 boxes (90),"Intermittent cath ~4x/day, single use."
+Urology,,U A,BD Bard Rubber Utility Catheter,14FR,277714,10 boxes (120),120,,box of 12,10 boxes (120),"Intermittent cath ~4x/day, single use."
+Urology,,U A,BD Bard Rubber Utility Catheter,16FR,277716,10 boxes (120),120,,box of 12,10 boxes (120),"Intermittent cath ~4x/day, single use."
+Urology,,U B,BD Tiemann Catheter Coude Tip,14FR,010114,10 boxes (120),120,,box of 12,10 boxes (120),"Coude intermittent cath ~4x/day, single use."
+Urology,,U B,BD Tiemann Catheter Coude Tip,16FR,010116,10 boxes (120),120,,box of 12,10 boxes (120),"Coude intermittent cath ~4x/day, single use."
+Urology,,U C,Medline Catheter Vinyl,14FR,DYND10700,4 boxes (120),4 boxes (120),,box of 30,4 boxes (120),"Intermittent cath ~4x/day, single use."
