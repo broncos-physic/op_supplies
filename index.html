@@ -323,7 +323,7 @@
       display: none;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 640px), (max-height: 500px) {
       header {
         padding: 8px 12px;
       }
@@ -524,67 +524,4 @@
         }).join("");
         $("empty").style.display = rows.length ? "none" : "block";
         $("count").textContent = rows.length + " of " + DATA.length + " items";
-        const q = $("q").value.trim(), filtered = q || cat !== "All";
-        $("sum").textContent = filtered ? [cat !== "All" ? cat : "", q ? "“" + q + "”" : ""].filter(Boolean).join(" · ") + " · " + rows.length : rows.length + " items";
-        $("tog").classList.toggle("on", !!filtered);
-        $("all").textContent = rows.length && rows.every(r => open.has(r.id)) ? "Collapse all" : "Expand all";
-        shown = rows;
-      }
-      let shown = [];
-
-      $("tb").onclick = e => {
-        const tr = e.target.closest("tr.main");
-        if (!tr || (!e.target.closest(".chev") && String(getSelection()))) return;
-        const id = +tr.dataset.id;
-        open.has(id) ? open.delete(id) : open.add(id);
-        render();
-      };
-
-      $("all").onclick = () => {
-        const allOpen = shown.every(r => open.has(r.id));
-        shown.forEach(r => allOpen ? open.delete(r.id) : open.add(r.id));
-        render();
-      };
-
-      $("chips").innerHTML = CATS.map(c =>
-        `<button aria-pressed="${c === "All"}">${c === "All" ? "" : `<span class="dot" style="--c:var(--k${ci(c)})"></span>`}${c}</button>`
-      ).join("");
-
-      $("tog").onclick = () => {
-        const h = document.querySelector("header"), o = h.classList.toggle("open");
-        $("tog").setAttribute("aria-expanded", o);
-        if (o) $("q").focus();
-      };
-      $("q").addEventListener("keydown", e => {
-        if (e.key === "Enter" && matchMedia("(max-width: 640px)").matches) {
-          $("q").blur();
-          document.querySelector("header").classList.remove("open");
-          $("tog").setAttribute("aria-expanded", false);
-        }
-      });
-
-      $("chips").onclick = e => {
-        if (e.target.tagName !== "BUTTON") return;
-        cat = e.target.textContent;
-        [...$("chips").children].forEach(b => b.setAttribute("aria-pressed", b === e.target));
-        render();
-      };
-
-      document.querySelectorAll("th[data-k]").forEach(th => th.onclick = () => {
-        const k = +th.dataset.k;
-        sortDir = sortK === k ? -sortDir : 1;
-        sortK = k;
-        document.querySelectorAll("th").forEach(x => x.removeAttribute("aria-sort"));
-        th.setAttribute("aria-sort", sortDir > 0 ? "ascending" : "descending");
-        render();
-      });
-
-      $("q").addEventListener("input", render);
-      const fit = () => document.documentElement.style.setProperty("--hh", document.querySelector("header").offsetHeight + "px");
-      new ResizeObserver(fit).observe(document.querySelector("header"));
-      fit();
-      render();
-    }
-  </script>
-</body>
-</html>
+        const q = $("q").value
