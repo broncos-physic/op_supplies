@@ -432,48 +432,39 @@
     </div>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js"></script>
   <script>
-    // Item data lives in data.csv (same folder). Columns are matched by header name:
+    // Item data lives in data.xlsx (same folder), first sheet. Columns are matched by header name:
     //   category, shelf, bin, product, size, ref, til, qty_30d, search_extra,
     //   assumed_pack, suggested_min, rationale
+    // Keep every column formatted as Text in Excel so refs like 021712 keep their leading zero.
     // suggested_min covers 3 patients for 7 days in whole dispensing units, and is never below qty_30d.
     // The last three show in the expandable detail row and are not searched.
     // A new category needs its own --kN color above (categories are numbered in order of first appearance).
     const COLS = ["category", "shelf", "bin", "product", "size", "ref", "til", "qty_30d", "search_extra",
                   "assumed_pack", "suggested_min", "rationale"];
 
-    function parseCSV(text) {
-      text = text.replace(/^\uFEFF/, "");
-      const out = [];
-      let row = [], f = "", q = false;
-      for (let i = 0; i < text.length; i++) {
-        const c = text[i];
-        if (q) {
-          if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
-          else f += c;
-        } else if (c === '"') q = true;
-        else if (c === ",") { row.push(f); f = ""; }
-        else if (c === "\n" || c === "\r") {
-          if (c === "\r" && text[i + 1] === "\n") i++;
-          row.push(f); f = ""; out.push(row); row = [];
-        } else f += c;
-      }
-      if (f !== "" || row.length) { row.push(f); out.push(row); }
-      return out.filter(r => r.some(v => v.trim() !== ""));
+    function toData(buf) {
+      const wb = XLSX.read(buf, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      // raw:false returns what Excel displays, so any cell that slipped into a number format still reads as shown
+      const [hdr, ...body] = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: "", blankrows: false });
+      const pos = COLS.map(c => hdr.findIndex(h => String(h).trim().toLowerCase() === c));
+      return body
+        .map(r => pos.map(p => (p < 0 ? "" : String(r[p] ?? "")).replace(/\u00a0/g, " ").trim()))
+        .filter(r => r.some(v => v));
     }
 
-    function toData(text) {
-      const [hdr, ...body] = parseCSV(text);
-      const pos = COLS.map(c => hdr.findIndex(h => h.trim().toLowerCase() === c));
-      return body.map(r => pos.map(p => (p < 0 ? "" : (r[p] || "")).trim()));
+    function fail(msg) {
+      document.getElementById("count").textContent = msg;
+      document.getElementById("sum").textContent = msg;
     }
 
-    fetch("data.csv", { cache: "no-cache" })
-      .then(r => { if (!r.ok) throw new Error(r.status + " " + r.statusText); return r.text(); })
-      .then(t => start(toData(t)))
-      .catch(e => {
-        document.getElementById("count").textContent = "Couldn't load data.csv (" + e.message + ").";
-      });
+    if (!window.XLSX) fail("Couldn't load the spreadsheet reader. Check the connection and reload.");
+    else fetch("data.xlsx", { cache: "no-cache" })
+      .then(r => { if (!r.ok) throw new Error(r.status + " " + r.statusText); return r.arrayBuffer(); })
+      .then(buf => start(toData(buf)))
+      .catch(e => fail("Couldn't load data.xlsx (" + e.message + ")."));
 
     function start(DATA) {
 
