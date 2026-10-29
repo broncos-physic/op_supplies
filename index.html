@@ -233,8 +233,45 @@
       background: color-mix(in srgb, var(--acc) 5%, transparent);
     }
 
-    tr.open td {
+    tr.open td,
+    tr.sub td {
       border-bottom-color: transparent;
+    }
+
+    tr.names td.narrow {
+      display: none;
+    }
+
+    .stack + .stack {
+      margin-top: 6px;
+    }
+
+    .mono {
+      font-family: ui-monospace, Consolas, monospace;
+    }
+
+    @media (max-width: 640px), (max-height: 500px) {
+      tr.names td.wide {
+        display: none;
+      }
+
+      tr.names td.narrow {
+        display: table-cell;
+      }
+
+      tr.names td.narrow .stack {
+        max-width: calc(100vw - 130px);
+        overflow-wrap: anywhere;
+      }
+    }
+
+    tr.names.mid td {
+      border-bottom-color: transparent;
+      padding-bottom: 4px;
+    }
+
+    tr.names + tr.det td {
+      padding-top: 4px;
     }
 
     .chev {
@@ -402,7 +439,7 @@
       </button>
     </div>
     <div id="panel">
-    <input id="q" type="search" placeholder="Search name, size, Ref #, or bin (e.g. W 14, allevyn, 4in)" autofocus autocomplete="off">
+    <input id="q" type="search" placeholder="Search name, size, Ref #, CMOP ID, or bin (e.g. W 14, allevyn, XV080)" autofocus autocomplete="off">
     <div class="chips" id="chips"></div>
     <div id="tools">
       <div id="count"></div>
@@ -434,25 +471,41 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js"></script>
   <script>
-    // Item data lives in data.xlsx (same folder), first sheet. Columns are matched by header name:
-    //   category, shelf, bin, product, size, ref, til, qty_30d, search_extra,
-    //   assumed_pack, suggested_min, rationale
-    // Keep every column formatted as Text in Excel so refs like 021712 keep their leading zero.
+    // Item data lives in data.xlsx (same folder), on the sheet named "Master" (or the first sheet if
+    // there is none). Columns are matched by header name, so their order doesn't matter:
+    //   category, bin, product name, size, ref, til, qty_30d, search_extra,
+    //   assumed_pack, suggested_min, rationale,
+    //   cmop id, mmr product name, scriptpro product brand name / generic name / strength /
+    //   dosage form / distributor (joined into one ScriptPro name)
+    // Any other column (comments, pending delete, pending flex on, ...) is ignored.
+    // Keep ID columns formatted as Text in Excel so refs like 021712 keep their leading zero.
     // suggested_min covers 3 patients for 7 days in whole dispensing units, and is never below qty_30d.
-    // The last three show in the expandable detail row and are not searched.
     // A new category needs its own --kN color above (categories are numbered in order of first appearance).
-    const COLS = ["category", "shelf", "bin", "product", "size", "ref", "til", "qty_30d", "search_extra",
-                  "assumed_pack", "suggested_min", "rationale"];
+
+    // Row layout used by the page: [category, (unused), bin, product, size, ref, til, qty_30d, search_extra,
+    //   assumed_pack, suggested_min, rationale, cmop id, mmr name, scriptpro name]
+    const COLS = [
+      ["category"], ["shelf"], ["bin"], ["product name", "product"], ["size"], ["ref", "ref #"],
+      ["til", "target inventory level"], ["qty_30d"], ["search_extra"],
+      ["assumed_pack"], ["suggested_min"], ["rationale"],
+      ["cmop id", "cmop"], ["mmr product name", "mmr name"]
+    ];
+    const SP = ["scriptpro product brand name", "scriptpro product generic name", "scriptpro product strength",
+                "scriptpro product dosage form", "scriptpro product distributor"];
 
     function toData(buf) {
       const wb = XLSX.read(buf, { type: "array" });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      // raw:false returns what Excel displays, so any cell that slipped into a number format still reads as shown
-      const [hdr, ...body] = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: "", blankrows: false });
-      const pos = COLS.map(c => hdr.findIndex(h => String(h).trim().toLowerCase() === c));
+      const name = wb.SheetNames.find(n => n.trim().toLowerCase() === "master") || wb.SheetNames[0];
+      // raw:false returns what Excel displays (e.g. 0.7 formatted as a percent reads "70%")
+      const [hdr, ...body] = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: false, defval: "", blankrows: false });
+      const norm = h => String(h).replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+      const H = hdr.map(norm);
+      const at = names => H.findIndex(h => names.includes(h));
+      const pos = COLS.map(at), spPos = SP.map(n => at([n]));
+      const val = (r, p) => (p < 0 ? "" : String(r[p] ?? "")).replace(/\u00a0/g, " ").trim();
       return body
-        .map(r => pos.map(p => (p < 0 ? "" : String(r[p] ?? "")).replace(/\u00a0/g, " ").trim()))
-        .filter(r => r.some(v => v));
+        .map(r => [...pos.map(p => val(r, p)), spPos.map(p => val(r, p)).filter(Boolean).join(" ")])
+        .filter(r => r[2] || r[3]);
     }
 
     function fail(msg) {
@@ -489,9 +542,22 @@
 
       function render() {
         const terms = $("q").value.toLowerCase().split(/\s+/).filter(Boolean);
-        let rows = DATA.filter(r => (cat === "All" || r[0] === cat) && terms.every(t => r.slice(0, 9).join(" ").toLowerCase().includes(t)));
+        let rows = DATA.filter(r => (cat === "All" || r[0] === cat) && terms.every(t => r.slice(0, 9).concat(r.slice(12, 15)).join(" ").toLowerCase().includes(t)));
         if (sortK !== null) rows = [...rows].sort((a, b) => sortDir * nat(a[sortK], b[sortK]));
         const cell = (v, terms) => v ? hl(v, terms) : '<span class="none">—</span>';
+        const names = (r, mid) => `
+          <tr class="det names${mid ? " mid" : ""}">
+            <td class="x"></td>
+            <td></td>
+            <td class="wide" colspan="2"><span class="lbl">MMR name</span>${cell(r[13], terms)}</td>
+            <td class="wide rf"><span class="lbl">CMOP ID</span>${cell(r[12], terms)}</td>
+            <td class="wide" colspan="3"><span class="lbl">ScriptPro name</span>${cell(r[14], terms)}</td>
+            <td class="narrow" colspan="6">
+              <div class="stack"><span class="lbl">CMOP ID</span><span class="mono">${cell(r[12], terms)}</span></div>
+              <div class="stack"><span class="lbl">MMR name</span>${cell(r[13], terms)}</div>
+              <div class="stack"><span class="lbl">ScriptPro name</span>${cell(r[14], terms)}</div>
+            </td>
+          </tr>`;
         const det = r => {
           const sug = r[10] || "", til = r[6] || "";
           const sugCell = sug && sug !== til
@@ -509,9 +575,9 @@
           </tr>`;
         };
         $("tb").innerHTML = rows.map(r => {
-          const o = open.has(r.id);
+          const o = open.has(r.id), n = o || terms.length > 0;
           return `
-          <tr class="main${o ? " open" : ""}" data-id="${r.id}">
+          <tr class="main${o ? " open" : ""}${n ? " sub" : ""}" data-id="${r.id}">
             <td class="x"><button class="chev" type="button" aria-expanded="${o}" aria-controls="d${r.id}" aria-label="${o ? "Hide" : "Show"} details">${CHEV}</button></td>
             <td class="bin">${r[2] ? `<span class="b" style="--c:var(--k${ci(r[0])})">${hl(r[2], terms)}</span>` : '<span class="none">—</span>'}</td>
             <td>${cell(r[3], terms)}</td>
@@ -520,7 +586,7 @@
             <td>${cell(r[6], terms)}</td>
             <td>${cell(r[7], terms)}</td>
             <td class="cat">${esc(r[0])}</td>
-          </tr>${o ? det(r) : ""}`;
+          </tr>${n ? names(r, o) : ""}${o ? det(r) : ""}`;
         }).join("");
         $("empty").style.display = rows.length ? "none" : "block";
         $("count").textContent = rows.length + " of " + DATA.length + " items";
