@@ -516,6 +516,189 @@
       }
     }
 
+    /* Phones (portrait or landscape): each item becomes a card, no sideways scrolling */
+    @media (max-width: 640px), (max-height: 500px) {
+      .wrap table,
+      .wrap tbody {
+        display: block;
+      }
+
+      .wrap thead {
+        display: none;
+      }
+
+      #tb tr {
+        display: grid;
+        grid-template-columns: 28px 58px minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 10px;
+        padding: 10px 10px 10px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      #tb tr:last-child {
+        border-bottom: 0;
+      }
+
+      #tb td {
+        display: block;
+        padding: 0;
+        border: 0;
+        background: none;
+        min-width: 0;
+      }
+
+      #tb tr.main:hover {
+        background: color-mix(in srgb, var(--acc) 5%, transparent);
+      }
+
+      #tb tr.main:hover td {
+        background: none;
+      }
+
+      #tb tr.sub,
+      #tb tr.open,
+      #tb tr.names.mid {
+        border-bottom-color: transparent;
+      }
+
+      #tb td.e,
+      #tb td.cat,
+      #tb tr.names td:not(.narrow) {
+        display: none;
+      }
+
+      #tb td.x {
+        grid-column: 1;
+        grid-row: 1 / span 3;
+      }
+
+      #tb td.bin {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      #tb td.st {
+        grid-column: 2;
+        grid-row: 2 / span 3;
+        padding-top: 8px;
+      }
+
+      #tb td.st .flags {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      #tb td.prod {
+        grid-column: 3 / span 2;
+        grid-row: 1;
+        font-weight: 500;
+      }
+
+      #tb td.prod .pub {
+        font-weight: 400;
+      }
+
+      #tb td.sz,
+      #tb td.tl {
+        grid-column: 3;
+      }
+
+      #tb td.rf,
+      #tb td.qt {
+        grid-column: 4;
+      }
+
+      #tb td.sz,
+      #tb td.rf {
+        grid-row: 2;
+        margin-top: 8px;
+      }
+
+      #tb td.tl,
+      #tb td.qt {
+        grid-row: 3;
+        margin-top: 8px;
+      }
+
+      #tb td[data-l]::before {
+        content: attr(data-l);
+        display: block;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: .68rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--mut);
+        margin-bottom: 1px;
+      }
+
+      #tb tr.det {
+        background: color-mix(in srgb, var(--accbg) 55%, var(--card));
+        padding-top: 8px;
+        font-size: .9rem;
+      }
+
+      #tb tr.names td.narrow {
+        display: block;
+        grid-column: 3 / span 2;
+      }
+
+      #tb tr.names td.narrow .stack {
+        max-width: none;
+      }
+
+      #tb tr.rat-row {
+        padding-top: 4px;
+      }
+
+      #tb td.rat {
+        grid-column: 3 / span 2;
+        grid-row: 1;
+      }
+
+      #tb td.ap {
+        grid-column: 3;
+        grid-row: 2;
+        margin-top: 8px;
+      }
+
+      #tb td.sm {
+        grid-column: 4;
+        grid-row: 2;
+        margin-top: 8px;
+      }
+    }
+
+    /* Phone landscape: room for size, ref, target and 30-day qty on one line */
+    @media (max-height: 500px) and (min-width: 641px) {
+      #tb tr {
+        grid-template-columns: 28px 58px repeat(4, minmax(0, 1fr));
+      }
+
+      #tb td.prod,
+      #tb td.rat,
+      #tb tr.names td.narrow {
+        grid-column: 3 / span 4;
+      }
+
+      #tb td.sz { grid-column: 3; grid-row: 2; }
+      #tb td.rf { grid-column: 4; grid-row: 2; }
+      #tb td.tl { grid-column: 5; grid-row: 2; margin-top: 8px; }
+      #tb td.qt { grid-column: 6; grid-row: 2; margin-top: 8px; }
+
+      #tb td.x { grid-row: 1 / span 2; }
+      #tb td.st { grid-row: 2; }
+
+      #tb tr.names td.narrow {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+        column-gap: 10px;
+      }
+
+      #tb tr.names td.narrow .stack + .stack {
+        margin-top: 0;
+      }
+    }
+
     #empty {
       display: none;
       padding: 24px;
@@ -671,8 +854,8 @@
         };
         const names = (r, mid) => `
           <tr class="det names${mid ? " mid" : ""}">
-            <td class="x"></td>
-            <td></td>
+            <td class="x e"></td>
+            <td class="e"></td>
             <td class="wide" colspan="3"><span class="lbl">PowerChart product name</span>${cell(r[13], terms)}</td>
             <td class="wide rf"><span class="lbl">CMOP ID</span>${cell(r[12], terms)}</td>
             <td class="wide" colspan="3"></td>
@@ -687,14 +870,14 @@
             ? `${esc(sug)}<span class="diff">Current: ${esc(til || "—")}</span>`
             : (sug ? esc(sug) : '<span class="none">—</span>');
           return `
-          <tr class="det" id="d${r.id}">
-            <td class="x"></td>
-            <td></td>
-            <td colspan="3"><span class="lbl">Rationale</span>${r[11] ? esc(r[11]) : '<span class="none">—</span>'}</td>
-            <td><span class="lbl">Assumed pack</span>${r[9] ? esc(r[9]) : '<span class="none">—</span>'}</td>
-            <td><span class="lbl">Suggested min</span>${sugCell}</td>
-            <td></td>
-            <td></td>
+          <tr class="det rat-row" id="d${r.id}">
+            <td class="x e"></td>
+            <td class="e"></td>
+            <td class="rat" colspan="3"><span class="lbl">Rationale</span>${r[11] ? esc(r[11]) : '<span class="none">—</span>'}</td>
+            <td class="ap"><span class="lbl">Assumed pack</span>${r[9] ? esc(r[9]) : '<span class="none">—</span>'}</td>
+            <td class="sm"><span class="lbl">Suggested min</span>${sugCell}</td>
+            <td class="e"></td>
+            <td class="e"></td>
           </tr>`;
         };
         $("tb").innerHTML = rows.map(r => {
@@ -705,10 +888,10 @@
             <td class="bin">${r[2] ? `<span class="b" style="--c:var(--k${ci(r[0])})">${hl(r[2], terms)}</span>` : '<span class="none">—</span>'}</td>
             <td class="prod">${cell(r[3], terms)}${r[14] ? `<span class="pub">${INFO}<span>${hl(r[14], terms)}</span></span>` : ""}</td>
             <td class="st">${badges(r)}</td>
-            <td>${cell(r[4], terms)}</td>
-            <td class="rf">${cell(r[5], terms)}</td>
-            <td>${cell(r[6], terms)}</td>
-            <td>${cell(r[7], terms)}</td>
+            <td class="sz" data-l="Size">${cell(r[4], terms)}</td>
+            <td class="rf" data-l="Ref #">${cell(r[5], terms)}</td>
+            <td class="tl" data-l="Target inventory">${cell(r[6], terms)}</td>
+            <td class="qt" data-l="Qty for 30 days">${cell(r[7], terms)}</td>
             <td class="cat">${esc(r[0])}</td>
           </tr>${n ? names(r, o) : ""}${o ? det(r) : ""}`;
         }).join("");
