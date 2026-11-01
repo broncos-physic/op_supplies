@@ -516,7 +516,8 @@
       }
     }
 
-    /* Phones (portrait or landscape): each item becomes a card, no sideways scrolling */
+    /* Phones (portrait or landscape): each item becomes a card, no sideways scrolling.
+       Line 1: chevron, bin, product, status icons. Below: fields across the full width. */
     @media (max-width: 640px), (max-height: 500px) {
       .wrap table,
       .wrap tbody {
@@ -528,10 +529,11 @@
       }
 
       #tb tr {
-        display: grid;
-        grid-template-columns: 28px 58px minmax(0, 1fr) minmax(0, 1fr);
-        column-gap: 10px;
-        padding: 10px 10px 10px 8px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0 10px;
+        padding: 10px 12px;
         border-bottom: 1px solid var(--line);
       }
 
@@ -568,29 +570,16 @@
       }
 
       #tb td.x {
-        grid-column: 1;
-        grid-row: 1 / span 3;
+        width: auto;
+        flex: none;
       }
 
       #tb td.bin {
-        grid-column: 2;
-        grid-row: 1;
-      }
-
-      #tb td.st {
-        grid-column: 2;
-        grid-row: 2 / span 3;
-        padding-top: 8px;
-      }
-
-      #tb td.st .flags {
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex: none;
       }
 
       #tb td.prod {
-        grid-column: 3 / span 2;
-        grid-row: 1;
+        flex: 1 1 0;
         font-weight: 500;
       }
 
@@ -598,26 +587,45 @@
         font-weight: 400;
       }
 
-      #tb td.sz,
-      #tb td.tl {
-        grid-column: 3;
+      #tb td.st {
+        flex: none;
       }
 
+      #tb td.st:empty {
+        display: none;
+      }
+
+      #tb td.st .flags {
+        flex-direction: row;
+      }
+
+      /* invisible full-width break so the fields always start below line 1 */
+      #tb tr.main::after {
+        content: "";
+        order: 5;
+        flex-basis: 100%;
+      }
+
+      /* fields: two per line */
+      #tb td.sz,
       #tb td.rf,
-      #tb td.qt {
-        grid-column: 4;
-      }
-
-      #tb td.sz,
-      #tb td.rf {
-        grid-row: 2;
-        margin-top: 8px;
-      }
-
       #tb td.tl,
-      #tb td.qt {
-        grid-row: 3;
+      #tb td.qt,
+      #tb td.ap,
+      #tb td.sm {
+        order: 6;
+        flex: 0 0 calc(50% - 5px);
+        align-self: flex-start;
         margin-top: 8px;
+      }
+
+      #tb td.rat {
+        margin-top: 0;
+      }
+
+      #tb td.rat,
+      #tb tr.names td.narrow {
+        flex: 1 0 100%;
       }
 
       #tb td[data-l]::before {
@@ -633,69 +641,47 @@
 
       #tb tr.det {
         background: color-mix(in srgb, var(--accbg) 55%, var(--card));
-        padding-top: 8px;
         font-size: .9rem;
       }
 
       #tb tr.names td.narrow {
         display: block;
-        grid-column: 3 / span 2;
       }
 
       #tb tr.names td.narrow .stack {
         max-width: none;
       }
 
-      #tb tr.rat-row {
-        padding-top: 4px;
+      #tb tr.names.mid {
+        padding-bottom: 8px;
       }
 
-      #tb td.rat {
-        grid-column: 3 / span 2;
-        grid-row: 1;
-      }
-
-      #tb td.ap {
-        grid-column: 3;
-        grid-row: 2;
-        margin-top: 8px;
-      }
-
-      #tb td.sm {
-        grid-column: 4;
-        grid-row: 2;
-        margin-top: 8px;
+      #tb tr.names.mid + tr.det {
+        padding-top: 2px;
       }
     }
 
-    /* Phone landscape: room for size, ref, target and 30-day qty on one line */
+    /* Phone landscape: all four fields on one line */
     @media (max-height: 500px) and (min-width: 641px) {
-      #tb tr {
-        grid-template-columns: 28px 58px repeat(4, minmax(0, 1fr));
+      #tb td.sz,
+      #tb td.rf,
+      #tb td.tl,
+      #tb td.qt {
+        flex-basis: calc(25% - 7.5px);
       }
 
-      #tb td.prod,
-      #tb td.rat,
       #tb tr.names td.narrow {
-        grid-column: 3 / span 4;
+        display: flex;
+        gap: 10px;
       }
 
-      #tb td.sz { grid-column: 3; grid-row: 2; }
-      #tb td.rf { grid-column: 4; grid-row: 2; }
-      #tb td.tl { grid-column: 5; grid-row: 2; margin-top: 8px; }
-      #tb td.qt { grid-column: 6; grid-row: 2; margin-top: 8px; }
-
-      #tb td.x { grid-row: 1 / span 2; }
-      #tb td.st { grid-row: 2; }
-
-      #tb tr.names td.narrow {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
-        column-gap: 10px;
+      #tb tr.names td.narrow .stack:first-child {
+        flex: 0 0 calc(25% - 7.5px);
       }
 
       #tb tr.names td.narrow .stack + .stack {
         margin-top: 0;
+        flex: 1;
       }
     }
 
