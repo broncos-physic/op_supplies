@@ -250,12 +250,11 @@
       display: none;
     }
 
-    td.prod .flags {
-      display: inline-flex;
-      flex-wrap: wrap;
+    td.st .flags {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
       gap: 4px;
-      margin-left: 6px;
-      vertical-align: 1px;
     }
 
     .flag {
@@ -346,9 +345,9 @@
         display: none;
       }
 
-      td.prod .flags {
-        display: flex;
-        margin: 4px 0 0;
+      td.st {
+        padding-left: 4px;
+        padding-right: 4px;
       }
 
       tr.names td.narrow {
@@ -552,6 +551,7 @@
             <th class="x" aria-label="Details"></th>
             <th data-k="2">Bin</th>
             <th data-k="3">Product</th>
+            <th data-k="st">Status</th>
             <th data-k="4">Size</th>
             <th data-k="5">Ref #</th>
             <th data-k="6" title="Enough for 3 patients for 7 days in whole dispensing units, and never less than the 30-day dispense quantity">Target Inventory Level</th>
@@ -608,9 +608,9 @@
     const FLAGS = [
       { i: 17, cls: "ret", label: "Retiring",
         tip: "Retiring: this item will be discontinued once the pharmacy has used up its stock on hand.",
-        icon: '<path d="M5 2.5h6M5 13.5h6M5.5 2.5c0 3 5 3.5 5 5.5s-5 2.5-5 5.5M10.5 2.5c0 1.6-1.4 2.6-2.5 3.4"/>' },
-      { i: 18, cls: "lock", label: "Not orderable yet",
-        tip: "Not orderable yet: this item still needs to be added to the prescribing system before it can be ordered.",
+        icon: '<path d="M4 2h8M4 14h8M5 2v1.6c0 2 3 2.9 3 4.4S5 10.4 5 12.4V14M11 2v1.6c0 2-3 2.9-3 4.4s3 2.4 3 4.4V14"/><path d="M6.4 12.6h3.2L8 10.9z" fill="currentColor" stroke="none"/>' },
+      { i: 18, cls: "lock", label: "Pending setup",
+        tip: "Pending setup: this item can't be ordered yet. It still needs to be added to the prescribing system.",
         icon: '<rect x="3.5" y="7" width="9" height="6.5" rx="1.2"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/>' },
       { i: 16, cls: "sub", label: "Replacement",
         tip: "Replacement: the item dispensed is an equivalent product from a different brand than the one prescribed.",
@@ -634,6 +634,7 @@
 
     function start(DATA) {
 
+      DATA.forEach(r => r.st = flagText(r));
       DATA.forEach(r => r.hay = r.slice(0, 9).concat(r.slice(12, 15), flagText(r)).join(" ").toLowerCase());
       const CATS = ["All", ...new Set(DATA.map(r => r[0]))];
       const ci = c => CATS.indexOf(c) - 1;
@@ -659,7 +660,8 @@
         unpin();
         const terms = $("q").value.toLowerCase().split(/\s+/).filter(Boolean);
         let rows = DATA.filter(r => (cat === "All" || r[0] === cat) && terms.every(t => r.hay.includes(t)));
-        if (sortK !== null) rows = [...rows].sort((a, b) => sortDir * nat(a[sortK], b[sortK]));
+        if (sortK !== null) rows = [...rows].sort((a, b) =>
+          sortK === "st" && !a.st !== !b.st ? (a.st ? -1 : 1) : sortDir * nat(a[sortK], b[sortK]));
         const cell = (v, terms) => v ? hl(v, terms) : '<span class="none">—</span>';
         const badges = r => {
           const on = FLAGS.filter(f => yes(r[f.i]));
@@ -671,10 +673,10 @@
           <tr class="det names${mid ? " mid" : ""}">
             <td class="x"></td>
             <td></td>
-            <td class="wide" colspan="2"><span class="lbl">PowerChart product name</span>${cell(r[13], terms)}</td>
+            <td class="wide" colspan="3"><span class="lbl">PowerChart product name</span>${cell(r[13], terms)}</td>
             <td class="wide rf"><span class="lbl">CMOP ID</span>${cell(r[12], terms)}</td>
             <td class="wide" colspan="3"></td>
-            <td class="narrow" colspan="6">
+            <td class="narrow" colspan="7">
               <div class="stack"><span class="lbl">CMOP ID</span><span class="mono">${cell(r[12], terms)}</span></div>
               <div class="stack"><span class="lbl">PowerChart product name</span>${cell(r[13], terms)}</div>
             </td>
@@ -688,7 +690,7 @@
           <tr class="det" id="d${r.id}">
             <td class="x"></td>
             <td></td>
-            <td colspan="2"><span class="lbl">Rationale</span>${r[11] ? esc(r[11]) : '<span class="none">—</span>'}</td>
+            <td colspan="3"><span class="lbl">Rationale</span>${r[11] ? esc(r[11]) : '<span class="none">—</span>'}</td>
             <td><span class="lbl">Assumed pack</span>${r[9] ? esc(r[9]) : '<span class="none">—</span>'}</td>
             <td><span class="lbl">Suggested min</span>${sugCell}</td>
             <td></td>
@@ -701,7 +703,8 @@
           <tr class="main${o ? " open" : ""}${n ? " sub" : ""}" data-id="${r.id}">
             <td class="x"><button class="chev" type="button" aria-expanded="${o}" aria-controls="d${r.id}" aria-label="${o ? "Hide" : "Show"} details">${CHEV}</button></td>
             <td class="bin">${r[2] ? `<span class="b" style="--c:var(--k${ci(r[0])})">${hl(r[2], terms)}</span>` : '<span class="none">—</span>'}</td>
-            <td class="prod">${cell(r[3], terms)}${badges(r)}${r[14] ? `<span class="pub">${INFO}<span>${hl(r[14], terms)}</span></span>` : ""}</td>
+            <td class="prod">${cell(r[3], terms)}${r[14] ? `<span class="pub">${INFO}<span>${hl(r[14], terms)}</span></span>` : ""}</td>
+            <td class="st">${badges(r)}</td>
             <td>${cell(r[4], terms)}</td>
             <td class="rf">${cell(r[5], terms)}</td>
             <td>${cell(r[6], terms)}</td>
@@ -764,7 +767,7 @@
       };
 
       document.querySelectorAll("th[data-k]").forEach(th => th.onclick = () => {
-        const k = +th.dataset.k;
+        const k = th.dataset.k === "st" ? "st" : +th.dataset.k;
         sortDir = sortK === k ? -sortDir : 1;
         sortK = k;
         document.querySelectorAll("th").forEach(x => x.removeAttribute("aria-sort"));
