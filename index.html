@@ -23,6 +23,10 @@
       --k6: #a16207;
       --k7: #be123c;
       --k8: #475569;
+      --f-ret: #b45309;
+      --f-lock: #6d28d9;
+      --f-sub: #0f766e;
+      --f-shr: #1d4ed8;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -44,6 +48,10 @@
         --k6: #f0c14b;
         --k7: #fb7185;
         --k8: #94a3b8;
+        --f-ret: #fbbf24;
+        --f-lock: #c4b5fd;
+        --f-sub: #5eead4;
+        --f-shr: #93c5fd;
       }
     }
 
@@ -242,6 +250,81 @@
       display: none;
     }
 
+    td.prod .flags {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-left: 6px;
+      vertical-align: 1px;
+    }
+
+    .flag {
+      --c: var(--mut);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font: inherit;
+      font-size: .72rem;
+      font-weight: 600;
+      line-height: 1;
+      padding: 3px 7px 3px 5px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+      background: color-mix(in srgb, var(--c) 12%, transparent);
+      color: var(--c);
+      cursor: help;
+      white-space: nowrap;
+    }
+
+    .flag svg {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .f-ret { --c: var(--f-ret); }
+    .f-lock { --c: var(--f-lock); }
+    .f-sub { --c: var(--f-sub); }
+    .f-shr { --c: var(--f-shr); }
+
+    .pub {
+      display: flex;
+      gap: 5px;
+      align-items: flex-start;
+      margin-top: 4px;
+      font-size: .82rem;
+      color: var(--mut);
+    }
+
+    .pub svg {
+      flex: none;
+      width: 14px;
+      height: 14px;
+      margin-top: 1px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+    }
+
+    .tip {
+      position: fixed;
+      z-index: 10;
+      max-width: min(300px, calc(100vw - 16px));
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: var(--fg);
+      color: var(--bg);
+      font-size: .82rem;
+      line-height: 1.35;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
+      pointer-events: none;
+    }
+
     .stack + .stack {
       margin-top: 6px;
     }
@@ -253,6 +336,19 @@
     @media (max-width: 640px), (max-height: 500px) {
       tr.names td.wide {
         display: none;
+      }
+
+      .flag {
+        padding: 3px 5px;
+      }
+
+      .flag .fl {
+        display: none;
+      }
+
+      td.prod .flags {
+        display: flex;
+        margin: 4px 0 0;
       }
 
       tr.names td.narrow {
@@ -439,7 +535,7 @@
       </button>
     </div>
     <div id="panel">
-    <input id="q" type="search" placeholder="Search name, size, Ref #, CMOP ID, or bin (e.g. W 14, allevyn, XV080)" autofocus autocomplete="off">
+    <input id="q" type="search" placeholder="Search name, size, Ref #, CMOP ID, bin, or badge (e.g. W 14, allevyn, XV080, retiring)" autofocus autocomplete="off">
     <div class="chips" id="chips"></div>
     <div id="tools">
       <div id="count"></div>
@@ -474,39 +570,56 @@
     // Item data lives in data.xlsx (same folder), on the sheet named "Master" (or the first sheet if
     // there is none). Columns are matched by header name, so their order doesn't matter:
     //   category, bin, product name, size, ref, til, qty_30d, search_extra,
-    //   assumed_pack, suggested_min, rationale,
-    //   cmop id, mmr product name, scriptpro product brand name / generic name / strength /
-    //   dosage form / distributor (joined into one ScriptPro name)
-    // Any other column (comments, pending delete, pending flex on, ...) is ignored.
+    //   assumed_pack, suggested_min, rationale, cmop id, mmr product name (shown as PowerChart name),
+    //   public comments, and the TRUE/FALSE flags hidden, replacement, pending delete, pending flex on,
+    //   shared bin
+    // Rows with hidden = TRUE are left out. Any other column (internal comments, ScriptPro names, ...)
+    // is ignored.
     // Keep ID columns formatted as Text in Excel so refs like 021712 keep their leading zero.
-    // suggested_min covers 3 patients for 7 days in whole dispensing units, and is never below qty_30d.
     // A new category needs its own --kN color above (categories are numbered in order of first appearance).
 
-    // Row layout used by the page: [category, (unused), bin, product, size, ref, til, qty_30d, search_extra,
-    //   assumed_pack, suggested_min, rationale, cmop id, mmr name, scriptpro name]
+    // Row layout used by the page:
+    //   0 category, 1 (unused), 2 bin, 3 product, 4 size, 5 ref, 6 til, 7 qty_30d, 8 search_extra,
+    //   9 assumed_pack, 10 suggested_min, 11 rationale, 12 cmop id, 13 PowerChart name, 14 public comments,
+    //   15 hidden, 16 replacement, 17 pending delete, 18 pending flex on, 19 shared bin
     const COLS = [
       ["category"], ["shelf"], ["bin"], ["product name", "product"], ["size"], ["ref", "ref #"],
       ["til", "target inventory level"], ["qty_30d"], ["search_extra"],
       ["assumed_pack"], ["suggested_min"], ["rationale"],
-      ["cmop id", "cmop"], ["mmr product name", "mmr name"]
+      ["cmop id", "cmop"], ["mmr product name", "powerchart product name", "mmr name"], ["public comments", "public comment"],
+      ["hidden"], ["replacement"], ["pending delete"], ["pending flex on"], ["shared bin"]
     ];
-    const SP = ["scriptpro product brand name", "scriptpro product generic name", "scriptpro product strength",
-                "scriptpro product dosage form", "scriptpro product distributor"];
+    const yes = v => /^(true|yes|y|x|1)$/i.test(v);
 
     function toData(buf) {
       const wb = XLSX.read(buf, { type: "array" });
       const name = wb.SheetNames.find(n => n.trim().toLowerCase() === "master") || wb.SheetNames[0];
-      // raw:false returns what Excel displays (e.g. 0.7 formatted as a percent reads "70%")
+      // raw:false returns what Excel displays (TRUE/FALSE for checkboxes, "70%" for a percent)
       const [hdr, ...body] = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: false, defval: "", blankrows: false });
       const norm = h => String(h).replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
       const H = hdr.map(norm);
-      const at = names => H.findIndex(h => names.includes(h));
-      const pos = COLS.map(at), spPos = SP.map(n => at([n]));
-      const val = (r, p) => (p < 0 ? "" : String(r[p] ?? "")).replace(/\u00a0/g, " ").trim();
+      const pos = COLS.map(names => H.findIndex(h => names.includes(h)));
+      const val = (r, p) => (p < 0 ? "" : String(r[p] ?? "")).replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
       return body
-        .map(r => [...pos.map(p => val(r, p)), spPos.map(p => val(r, p)).filter(Boolean).join(" ")])
-        .filter(r => r[2] || r[3]);
+        .map(r => pos.map(p => val(r, p)))
+        .filter(r => (r[2] || r[3]) && !yes(r[15]));
     }
+
+    const FLAGS = [
+      { i: 17, cls: "ret", label: "Retiring",
+        tip: "Retiring: this item will be discontinued once the pharmacy has used up its stock on hand.",
+        icon: '<path d="M5 2.5h6M5 13.5h6M5.5 2.5c0 3 5 3.5 5 5.5s-5 2.5-5 5.5M10.5 2.5c0 1.6-1.4 2.6-2.5 3.4"/>' },
+      { i: 18, cls: "lock", label: "Not orderable yet",
+        tip: "Not orderable yet: this item still needs to be added to the prescribing system before it can be ordered.",
+        icon: '<rect x="3.5" y="7" width="9" height="6.5" rx="1.2"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/>' },
+      { i: 16, cls: "sub", label: "Replacement",
+        tip: "Replacement: the item dispensed is an equivalent product from a different brand than the one prescribed.",
+        icon: '<path d="M3 5.5h9.5M10 3l2.5 2.5L10 8M13 10.5H3.5M6 8l-2.5 2.5L6 13"/>' },
+      { i: 19, cls: "shr", label: "Shared bin",
+        tip: "Shared bin: this bin holds more than one product. Check the size and label before dispensing.",
+        icon: '<path d="M2.5 6.5h11v7h-11zM2.5 6.5l1.5-3h8l1.5 3M8 6.5v7"/>' }
+    ];
+    const flagText = r => FLAGS.filter(f => yes(r[f.i])).map(f => f.label).join(" ");
 
     function fail(msg) {
       document.getElementById("count").textContent = msg;
@@ -521,6 +634,7 @@
 
     function start(DATA) {
 
+      DATA.forEach(r => r.hay = r.slice(0, 9).concat(r.slice(12, 15), flagText(r)).join(" ").toLowerCase());
       const CATS = ["All", ...new Set(DATA.map(r => r[0]))];
       const ci = c => CATS.indexOf(c) - 1;
       let cat = "All", sortK = null, sortDir = 1;
@@ -538,24 +652,31 @@
 
       const CHEV = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       const open = new Set();
+    const INFO = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.2v4M8 4.9v.1"/></svg>';
       DATA.forEach((r, i) => r.id = i);
 
       function render() {
+        unpin();
         const terms = $("q").value.toLowerCase().split(/\s+/).filter(Boolean);
-        let rows = DATA.filter(r => (cat === "All" || r[0] === cat) && terms.every(t => r.slice(0, 9).concat(r.slice(12, 15)).join(" ").toLowerCase().includes(t)));
+        let rows = DATA.filter(r => (cat === "All" || r[0] === cat) && terms.every(t => r.hay.includes(t)));
         if (sortK !== null) rows = [...rows].sort((a, b) => sortDir * nat(a[sortK], b[sortK]));
         const cell = (v, terms) => v ? hl(v, terms) : '<span class="none">—</span>';
+        const badges = r => {
+          const on = FLAGS.filter(f => yes(r[f.i]));
+          return on.length ? `<span class="flags">${on.map(f =>
+            `<button type="button" class="flag f-${f.cls}" data-tip="${esc(f.tip)}" aria-label="${esc(f.tip)}"><svg viewBox="0 0 16 16" aria-hidden="true">${f.icon}</svg><span class="fl">${hl(f.label, terms)}</span></button>`
+          ).join("")}</span>` : "";
+        };
         const names = (r, mid) => `
           <tr class="det names${mid ? " mid" : ""}">
             <td class="x"></td>
             <td></td>
-            <td class="wide" colspan="2"><span class="lbl">MMR name</span>${cell(r[13], terms)}</td>
+            <td class="wide" colspan="2"><span class="lbl">PowerChart product name</span>${cell(r[13], terms)}</td>
             <td class="wide rf"><span class="lbl">CMOP ID</span>${cell(r[12], terms)}</td>
-            <td class="wide" colspan="3"><span class="lbl">ScriptPro name</span>${cell(r[14], terms)}</td>
+            <td class="wide" colspan="3"></td>
             <td class="narrow" colspan="6">
               <div class="stack"><span class="lbl">CMOP ID</span><span class="mono">${cell(r[12], terms)}</span></div>
-              <div class="stack"><span class="lbl">MMR name</span>${cell(r[13], terms)}</div>
-              <div class="stack"><span class="lbl">ScriptPro name</span>${cell(r[14], terms)}</div>
+              <div class="stack"><span class="lbl">PowerChart product name</span>${cell(r[13], terms)}</div>
             </td>
           </tr>`;
         const det = r => {
@@ -580,7 +701,7 @@
           <tr class="main${o ? " open" : ""}${n ? " sub" : ""}" data-id="${r.id}">
             <td class="x"><button class="chev" type="button" aria-expanded="${o}" aria-controls="d${r.id}" aria-label="${o ? "Hide" : "Show"} details">${CHEV}</button></td>
             <td class="bin">${r[2] ? `<span class="b" style="--c:var(--k${ci(r[0])})">${hl(r[2], terms)}</span>` : '<span class="none">—</span>'}</td>
-            <td>${cell(r[3], terms)}</td>
+            <td class="prod">${cell(r[3], terms)}${badges(r)}${r[14] ? `<span class="pub">${INFO}<span>${hl(r[14], terms)}</span></span>` : ""}</td>
             <td>${cell(r[4], terms)}</td>
             <td class="rf">${cell(r[5], terms)}</td>
             <td>${cell(r[6], terms)}</td>
@@ -599,6 +720,12 @@
       let shown = [];
 
       $("tb").onclick = e => {
+        const fl = e.target.closest(".flag");
+        if (fl) {
+          e.stopPropagation();
+          if (pinned === fl) { pinned = null; hideTip(); } else { pinned = fl; showTip(fl); }
+          return;
+        }
         const tr = e.target.closest("tr.main");
         if (!tr || (!e.target.closest(".chev") && String(getSelection()))) return;
         const id = +tr.dataset.id;
@@ -644,6 +771,35 @@
         th.setAttribute("aria-sort", sortDir > 0 ? "ascending" : "descending");
         render();
       });
+
+      // one shared tooltip so it isn't clipped by the scrolling table
+      let tipEl = null, tipFor = null, pinned = null;
+      function showTip(el) {
+        hideTip();
+        tipEl = document.createElement("div");
+        tipEl.className = "tip"; tipEl.setAttribute("role", "tooltip");
+        tipEl.textContent = el.dataset.tip;
+        document.body.appendChild(tipEl);
+        const b = el.getBoundingClientRect(), t = tipEl.getBoundingClientRect();
+        let x = Math.min(Math.max(8, b.left + b.width / 2 - t.width / 2), innerWidth - t.width - 8);
+        let y = b.top - t.height - 8;
+        if (y < 8) y = b.bottom + 8;
+        tipEl.style.left = x + "px"; tipEl.style.top = y + "px";
+        tipFor = el;
+      }
+      function hideTip() { if (tipEl) tipEl.remove(); tipEl = tipFor = null; }
+      function unpin() { pinned = null; hideTip(); }
+      $("tb").addEventListener("mouseover", e => { const f = e.target.closest(".flag"); if (f && f !== tipFor) showTip(f); });
+      $("tb").addEventListener("mouseout", e => { const f = e.target.closest(".flag"); if (f && f !== pinned && !f.contains(e.relatedTarget)) hideTip(); });
+      $("tb").addEventListener("focusin", e => { const f = e.target.closest(".flag"); if (f) showTip(f); });
+      $("tb").addEventListener("focusout", e => { const f = e.target.closest(".flag"); if (f && f !== pinned) hideTip(); });
+      document.addEventListener("click", e => { if (!e.target.closest(".flag")) unpin(); });
+      document.querySelector(".wrap").addEventListener("scroll", () => {
+        if (!tipFor) return;
+        const w = document.querySelector(".wrap").getBoundingClientRect(), r = tipFor.getBoundingClientRect();
+        if (r.bottom < w.top + 40 || r.top > w.bottom) unpin(); else showTip(tipFor);
+      }, { passive: true });
+      addEventListener("resize", unpin);
 
       $("q").addEventListener("input", render);
       const fit = () => document.documentElement.style.setProperty("--hh", document.querySelector("header").offsetHeight + "px");
