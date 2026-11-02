@@ -766,7 +766,7 @@
     //   category, bin, product name, size, ref, til, qty_30d, search_extra,
     //   assumed_pack, suggested_min, rationale, cmop id, mmr product name (shown as PowerChart name),
     //   public comments, and the TRUE/FALSE flags hidden, replacement, pending delete, pending flex on,
-    //   shared bin
+    //   shared bin, and search terms (extra comma-separated words that make an item findable; not shown)
     // Rows with hidden = TRUE are left out. Any other column (internal comments, ScriptPro names, ...)
     // is ignored.
     // Keep ID columns formatted as Text in Excel so refs like 021712 keep their leading zero.
@@ -775,13 +775,14 @@
     // Row layout used by the page:
     //   0 category, 1 (unused), 2 bin, 3 product, 4 size, 5 ref, 6 til, 7 qty_30d, 8 search_extra,
     //   9 assumed_pack, 10 suggested_min, 11 rationale, 12 cmop id, 13 PowerChart name, 14 public comments,
-    //   15 hidden, 16 replacement, 17 pending delete, 18 pending flex on, 19 shared bin
+    //   15 hidden, 16 replacement, 17 pending delete, 18 pending flex on, 19 shared bin, 20 search terms
     const COLS = [
       ["category"], ["shelf"], ["bin"], ["product name", "product"], ["size"], ["ref", "ref #"],
       ["til", "target inventory level"], ["qty_30d"], ["search_extra"],
       ["assumed_pack"], ["suggested_min"], ["rationale"],
       ["cmop id", "cmop"], ["mmr product name", "powerchart product name", "mmr name"], ["public comments", "public comment"],
-      ["hidden"], ["replacement"], ["pending delete"], ["pending flex on"], ["shared bin"]
+      ["hidden"], ["replacement"], ["pending delete"], ["pending flex on"], ["shared bin"],
+      ["search terms", "search_terms", "search term"]
     ];
     const yes = v => /^(true|yes|y|x|1)$/i.test(v);
 
@@ -829,7 +830,7 @@
     function start(DATA) {
 
       DATA.forEach(r => r.st = flagText(r));
-      DATA.forEach(r => r.hay = r.slice(0, 9).concat(r.slice(12, 15), flagText(r)).join(" ").toLowerCase());
+      DATA.forEach(r => r.hay = r.slice(0, 9).concat(r.slice(12, 15), r[20], flagText(r)).join(" ").toLowerCase());
       const CATS = ["All", ...new Set(DATA.map(r => r[0]))];
       const ci = c => CATS.indexOf(c) - 1;
       let cat = "All", sortK = null, sortDir = 1;
