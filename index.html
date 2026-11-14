@@ -1179,53 +1179,72 @@
 
       let QP = null;
 
+      async function ask(system, user, web, key, model) {
+        const body = { model, messages: [{ role: "system", content: system }, { role: "user", content: user }] };
+        if (web) body.plugins = [{ id: "web", max_results: 5 }];
+        const res = await fetch(atob("aHR0cHM6Ly9vcGVucm91dGVyLmFpL2FwaS92MS9jaGF0L2NvbXBsZXRpb25z"), {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json", "X-Title": "Supply Bin Lookup" },
+          body: JSON.stringify(body)
+        });
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error((j.error && j.error.message) || (res.status + " " + res.statusText));
+        const msg = (j.choices && j.choices[0] && j.choices[0].message) || {};
+        const txt = String(msg.content || "");
+        let obj = null;
+        try { obj = JSON.parse(txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1)); } catch (e) {}
+        return { txt, obj, cites: (msg.annotations || []).filter(x => x.type === "url_citation").map(x => x.url_citation) };
+      }
+
       async function runQ() {
         const name = $("qrName").value.trim(), ref = $("qrRef").value.trim();
         const key = $("qrKey").value.trim(), model = $("qrModel").value.trim();
-        const out = $("qrOut"), go = $("qrGo");
+        const out = $("qrOut"), go = $("qrGo"), web = $("qrWeb").checked;
         const err = m => { out.innerHTML = `<div class="qr-card qr-err">${esc(String(m))}</div>`; };
+        const step = t => { out.innerHTML = `<div class="qr-card none">${t}</div>`; };
         if (!key || !model) return err("Enter the engine and key first.");
         if (!name && !ref) return err("Enter a product name or ref number.");
 
         go.disabled = true; go.textContent = "Working…";
-        out.innerHTML = '<div class="qr-card none">Looking it up…</div>';
-        if (QP === null) {
-          try {
-            const t = await fetch("qr-body.txt", { cache: "no-cache" });
-            if (!t.ok) throw new Error(t.status);
-            QP = (await t.text()).trim();
-          } catch (e) {
-            go.disabled = false; go.textContent = "Find replacement";
-            return err("Couldn't load qr-body.txt (" + (e.message || e) + ").");
-          }
-        }
-
-        const list = ["id | category | bin | product | size | ref | cmop id | status flags | notes"].concat(
-          DATA.map(r => [r.id, r[0], r[2], r[3], r[4], r[5], r[12], r.st, r[14]].map(x => x || "").join(" | "))
-        ).join("\n");
-        const body = {
-          model,
-          messages: [
-            { role: "system", content: QP },
-            { role: "user", content: `ITEM TO REPLACE\nName: ${name || "(not given)"}\nRef #: ${ref || "(not given)"}\n\nOUR LIST\n${list}` }
-          ]
-        };
-        if ($("qrWeb").checked) body.plugins = [{ id: "web", max_results: 5 }];
-
         try {
-          const res = await fetch(atob("aHR0cHM6Ly9vcGVucm91dGVyLmFpL2FwaS92MS9jaGF0L2NvbXBsZXRpb25z"), {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json", "X-Title": "Supply Bin Lookup" },
-            body: JSON.stringify(body)
-          });
-          const j = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error((j.error && j.error.message) || (res.status + " " + res.statusText));
-          const msg = (j.choices && j.choices[0] && j.choices[0].message) || {};
-          const txt = String(msg.content || "");
-          let a = null;
-          try { a = JSON.parse(txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1)); } catch (e) {}
-          if (!a) { out.innerHTML = `<div class="qr-card">${esc(txt || "Empty response.")}</div>`; return; }
-          showQ(a, (msg.annotations || []).filter(x => x.type === "url_citation").map(x => x.url_citation));
+          if (!QP) {
+            const t = await fetch("qr-body.txt", { cache: "no-cache" });
+            if (!t.ok) throw new Error("Couldn't load qr-body.txt (" + t.status + ")");
+            const parts = (await t.text()).split(/^### ([ABC])[ \t]*$/m);
+            QP = {};
+            for (let i = 1; i < parts.length; i += 2) QP[parts[i]] = parts[i + 1].trim();
+            if (!QP.A || !QP.B || !QP.C) { QP = null; throw new Error("qr-body.txt is missing a section"); }
+          }
+          const item = `Name: ${name || "(not given)"}\nRef #: ${ref || "(not given)"}`;
+          let cites = [];
+
+          step("Looking up the product…");
+          const A = await ask(QP.A, item, web, key, model);
+          cites = cites.concat(A.cites);
+          const idf = A.obj || { name: name || ref, summary: A.txt.slice(0, 300) };
+          const idText = `IDENTIFIED ITEM\nAs entered: ${name || "(not given)"} / ${ref || "(not given)"}\n${JSON.stringify(idf)}`;
+
+          step("Shortlisting from our list…");
+          const list = ["id | category | bin | product | size | ref | cmop id | status flags | notes"].concat(
+            DATA.map(r => [r.id, r[0], r[2], r[3], r[4], r[5], r[12], r.st, r[14]].map(x => x || "").join(" | "))
+          ).join("\n");
+          const B = await ask(QP.B, `${idText}\n\nOUR LIST\n${list}`, false, key, model);
+          const ids = [...new Set(((B.obj && B.obj.shortlist) || []).map(Number))].filter(n => DATA[n]).slice(0, 5);
+
+          if (!ids.length) {
+            showQ({ identified: idf, verdict: "none", summary: "Nothing on our list does the same job.", candidates: [] }, cites);
+            return;
+          }
+
+          step("Checking the candidates online…");
+          const cl = ids.map(n => { const r = DATA[n]; return [r.id, r[2], r[3], r[4], r[5], r.st, r[14]].map(x => x || "").join(" | "); }).join("\n");
+          const C = await ask(QP.C, `${idText}\n\nCANDIDATES\n${cl}`, web, key, model);
+          cites = cites.concat(C.cites);
+          if (!C.obj) { out.innerHTML = `<div class="qr-card">${esc(C.txt || "Empty response.")}</div>`; return; }
+          C.obj.identified = idf;
+          // only candidates that were actually shortlisted can be shown
+          C.obj.candidates = (C.obj.candidates || []).filter(c => ids.includes(+c.id));
+          showQ(C.obj, cites);
         } catch (e) {
           err(e.message || e);
         } finally {
