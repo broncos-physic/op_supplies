@@ -469,6 +469,27 @@
       cursor: pointer;
     }
 
+    /* Desktop: chips on the left, item count + Expand all on the far right of the same line */
+    @media (min-width: 641px) and (min-height: 501px) {
+      #panel {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        column-gap: 16px;
+        align-items: start;
+      }
+
+      #q {
+        grid-column: 1 / -1;
+      }
+
+      #tools {
+        margin-top: 8px;
+        justify-content: flex-end;
+        white-space: nowrap;
+        min-height: 33px;
+      }
+    }
+
     .top {
       display: flex;
       align-items: center;
