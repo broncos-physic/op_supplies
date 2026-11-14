@@ -731,6 +731,120 @@
       }
     }
 
+
+    /* ---- hidden AI mode (only shown when enabled with ?ai in the URL) ---- */
+    #aiFab {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 5;
+      font: inherit;
+      font-weight: 700;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--acc);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+      cursor: pointer;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #aiFab { color: #06121f; }
+    }
+
+    #aiFab[hidden] { display: none; }
+
+    #aiDlg {
+      width: min(680px, calc(100vw - 20px));
+      max-height: 92dvh;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--fg);
+    }
+
+    #aiDlg::backdrop { background: rgba(0, 0, 0, .45); }
+
+    #aiDlg h2 { margin: 0; font-size: 1.05rem; }
+
+    #aiDlg .hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+    #aiDlg label { display: block; font-size: .78rem; color: var(--mut); margin: 10px 0 3px; }
+
+    #aiDlg input[type=text], #aiDlg input[type=password] {
+      width: 100%;
+      font: inherit;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    #aiDlg input:focus { outline: none; border-color: var(--acc); }
+
+    #aiDlg .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    #aiDlg .row.r2 { grid-template-columns: 2fr 1fr; }
+
+    #aiDlg details { margin-top: 10px; }
+    #aiDlg summary { cursor: pointer; font-size: .85rem; color: var(--mut); }
+
+    #aiDlg .chk { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: .85rem; color: var(--fg); }
+
+    #aiDlg button.pri {
+      font: inherit;
+      font-weight: 600;
+      margin-top: 12px;
+      padding: 9px 18px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--acc);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #aiDlg button.pri { color: #06121f; }
+    }
+
+    #aiDlg button.pri:disabled { opacity: .6; cursor: progress; }
+
+    #aiDlg button.sec {
+      font: inherit;
+      font-size: .85rem;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--fg);
+      cursor: pointer;
+    }
+
+    #aiOut { margin-top: 14px; overflow: auto; max-height: 52dvh; }
+
+    .ai-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 8px;
+      font-size: .92rem;
+    }
+
+    .ai-verdict { --c: var(--mut); border-left: 4px solid var(--c); }
+    .ai-verdict strong { color: var(--c); }
+    .ai-verdict.v-equivalent, .ai-verdict.v-listed { --c: var(--k1); }
+    .ai-verdict.v-acceptable { --c: var(--f-ret); }
+    .ai-verdict.v-none { --c: var(--k7); }
+
+    .ai-card .top2 { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+    .ai-card .meta { color: var(--mut); font-size: .82rem; }
+    .ai-card .diff2 { color: var(--mut); font-size: .85rem; margin-top: 4px; }
+    .ai-src { font-size: .8rem; color: var(--mut); margin-top: 8px; }
+    .ai-src a { color: var(--acc); }
+    .ai-err { color: var(--k7); }
+
     #empty {
       display: none;
       padding: 24px;
@@ -779,6 +893,23 @@
       <div id="empty">No matches. Try fewer words or a different spelling.</div>
     </div>
   </main>
+
+
+  <button id="aiFab" type="button" hidden>AI</button>
+  <dialog id="aiDlg">
+    <div class="hd"><h2>AI replacement finder</h2><button id="aiClose" class="sec" type="button">Close</button></div>
+    <div class="row r2">
+      <div><label for="aiModel">Model name</label><input id="aiModel" type="text" placeholder="provider/model-name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+      <div><label for="aiKey">OpenRouter API key</label><input id="aiKey" type="password" placeholder="sk-or-..." autocomplete="off"></div>
+    </div>
+    <label class="chk"><input id="aiWeb" type="checkbox" checked> Let the model search the web to look up the product</label>
+    <div class="row r2">
+      <div><label for="aiName">Product (name, size, brand, whatever you have)</label><input id="aiName" type="text" autocomplete="off"></div>
+      <div><label for="aiRef">Ref # (optional)</label><input id="aiRef" type="text" autocomplete="off"></div>
+    </div>
+    <button id="aiGo" class="pri" type="button">Find replacement</button>
+    <div id="aiOut" aria-live="polite"></div>
+  </dialog>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js"></script>
   <script>
@@ -1026,6 +1157,126 @@
         if (r.bottom < w.top + 40 || r.top > w.bottom) unpin(); else showTip(tipFor);
       }, { passive: true });
       addEventListener("resize", unpin);
+
+
+      // ---- hidden AI mode ----
+      // Turn on with ?ai in the URL (remembered on this device); turn off with ?ai=off.
+      // The API key and model are kept only in this browser's localStorage, never in the page itself.
+      const store = {
+        get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+        set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} }
+      };
+      const ap = new URLSearchParams(location.search);
+      if (ap.has("ai")) store.set("sbl_ai", /^(off|0|false|no)$/i.test(ap.get("ai")) ? null : "1");
+      if (store.get("sbl_ai") === "1") initAI();
+
+      function initAI() {
+        const dlg = $("aiDlg");
+        $("aiFab").hidden = false;
+        $("aiFab").onclick = () => { dlg.showModal(); ($("aiKey").value && $("aiModel").value ? $("aiName") : $("aiModel")).focus(); };
+        $("aiClose").onclick = () => dlg.close();
+        $("aiKey").value = store.get("sbl_key") || "";
+        $("aiModel").value = store.get("sbl_model") || "";
+        $("aiWeb").checked = store.get("sbl_web") !== "0";
+        $("aiKey").oninput = e => store.set("sbl_key", e.target.value.trim() || null);
+        $("aiModel").oninput = e => store.set("sbl_model", e.target.value.trim() || null);
+        $("aiWeb").onchange = e => store.set("sbl_web", e.target.checked ? "1" : "0");
+        ["aiName", "aiRef"].forEach(id => $(id).addEventListener("keydown", e => { if (e.key === "Enter") runAI(); }));
+        $("aiGo").onclick = runAI;
+      }
+
+      const AI_SYS = `You help a hospital outpatient pharmacy find substitutes for medical supply items. You will get one ITEM TO REPLACE (a name and/or a ref number) and OUR LIST of items we stock, one per line: id | category | bin | product | size | ref | cmop id | status flags | notes.
+
+Steps:
+1. Work out what the item is: manufacturer, product type, size/dimensions, material, sterile or not, adhesive or not, pack size and any features that matter clinically. Use web search if you have it, and use the ref number if given. If you can't identify it with reasonable confidence, say so and set confidence to "low". Never invent specifications.
+2. Compare it ONLY against items on OUR LIST. Match on function first, then size/dimensions, then features. Different brand is fine. A different size, type, or feature is NOT an equivalent.
+3. Be honest. If nothing on the list is a suitable replacement, say so: verdict "none" with an empty candidates array. Do not stretch a poor match to have an answer, and do not suggest adding anything to the list.
+4. Prefer items that are not flagged Retiring or Pending setup. If you must suggest one that is, say so in the rationale.
+5. If the item is already on our list (same ref or clearly the same product), verdict "listed" with that item as the candidate.
+
+Reply with ONLY a JSON object, no markdown fences, in this shape:
+{"identified":{"name":"","manufacturer":"","summary":"what it is and the key specs","confidence":"high|medium|low"},"verdict":"listed|equivalent|acceptable|none","summary":"one-sentence bottom line","candidates":[{"id":0,"fit":"equivalent|acceptable","rationale":"1-2 sentences on why","differences":"what differs from the requested item, or empty"}]}
+"equivalent" = same function and specs. "acceptable" = same function but with differences worth noting. At most 3 candidates, best first.`;
+
+      async function runAI() {
+        const name = $("aiName").value.trim(), ref = $("aiRef").value.trim();
+        const key = $("aiKey").value.trim(), model = $("aiModel").value.trim();
+        const out = $("aiOut"), go = $("aiGo");
+        const err = m => { out.innerHTML = `<div class="ai-card ai-err">${esc(String(m))}</div>`; };
+        if (!key || !model) return err("Enter your OpenRouter API key and model name first.");
+        if (!name && !ref) return err("Enter a product name or ref number.");
+
+        const list = ["id | category | bin | product | size | ref | cmop id | status flags | notes"].concat(
+          DATA.map(r => [r.id, r[0], r[2], r[3], r[4], r[5], r[12], r.st, r[14]].map(x => x || "").join(" | "))
+        ).join("\n");
+        const body = {
+          model,
+          messages: [
+            { role: "system", content: AI_SYS },
+            { role: "user", content: `ITEM TO REPLACE\nName: ${name || "(not given)"}\nRef #: ${ref || "(not given)"}\n\nOUR LIST\n${list}` }
+          ]
+        };
+        if ($("aiWeb").checked) body.plugins = [{ id: "web", max_results: 5 }];
+
+        go.disabled = true; go.textContent = "Working…";
+        out.innerHTML = '<div class="ai-card none">Looking it up…</div>';
+        try {
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json", "X-Title": "Supply Bin Lookup" },
+            body: JSON.stringify(body)
+          });
+          const j = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error((j.error && j.error.message) || (res.status + " " + res.statusText));
+          const msg = (j.choices && j.choices[0] && j.choices[0].message) || {};
+          const txt = String(msg.content || "");
+          let a = null;
+          try { a = JSON.parse(txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1)); } catch (e) {}
+          if (!a) { out.innerHTML = `<div class="ai-card">${esc(txt || "Empty response.")}</div>`; return; }
+          showAI(a, (msg.annotations || []).filter(x => x.type === "url_citation").map(x => x.url_citation));
+        } catch (e) {
+          err(e.message || e);
+        } finally {
+          go.disabled = false; go.textContent = "Find replacement";
+        }
+      }
+
+      function showAI(a, cites) {
+        const idf = a.identified || {};
+        const V = { listed: "Already on our list", equivalent: "Equivalent on our list", acceptable: "Closest option, with differences", none: "No suitable replacement on our list" };
+        const v = V[a.verdict] ? a.verdict : "none";
+        // only trust ids that really exist in our data; the model's own text is never used for item details
+        const cands = (Array.isArray(a.candidates) ? a.candidates : []).filter(c => DATA[+c.id]).slice(0, 3);
+        const verdict = cands.length || v === "none" ? v : "none";
+        let h = `<div class="ai-card ai-verdict v-${verdict}"><strong>${V[verdict]}</strong><div>${esc(a.summary || "")}</div></div>`;
+        h += `<div class="ai-card"><span class="lbl">Identified as${idf.confidence ? " · " + esc(idf.confidence) + " confidence" : ""}</span>
+          <strong>${esc([idf.manufacturer, idf.name].filter(Boolean).join(" ") || "Unknown")}</strong>
+          <div class="meta">${esc(idf.summary || "")}</div></div>`;
+        h += cands.map(c => {
+          const r = DATA[+c.id];
+          const flags = FLAGS.filter(f => yes(r[f.i])).map(f => f.label).join(", ");
+          return `<div class="ai-card">
+            <div class="top2"><span class="b" style="--c:var(--k${ci(r[0])})">${esc(r[2] || "—")}</span><strong>${esc(r[3])}</strong>
+              <span class="meta">${esc(c.fit || "")}</span></div>
+            <div class="meta">${[r[4], r[5] && "Ref " + r[5], flags].filter(Boolean).map(esc).join(" · ")}</div>
+            <div>${esc(c.rationale || "")}</div>
+            ${c.differences ? `<div class="diff2">Differences: ${esc(c.differences)}</div>` : ""}
+            <button class="sec" type="button" data-show="${r.id}" style="margin-top:8px">Show in list</button>
+          </div>`;
+        }).join("");
+        if (cites.length) h += `<div class="ai-src">Sources: ${cites.slice(0, 5).map(c => `<a href="${esc(c.url || "")}" target="_blank" rel="noopener">${esc(c.title || c.url || "link")}</a>`).join(" · ")}</div>`;
+        $("aiOut").innerHTML = h;
+      }
+
+      $("aiOut").onclick = e => {
+        const b = e.target.closest("[data-show]");
+        if (!b) return;
+        const r = DATA[+b.dataset.show];
+        $("q").value = (r[5] || "").split(/\s+/)[0] || r[3];
+        $("aiDlg").close();
+        render();
+        scrollTo(0, 0);
+      };
 
       $("q").addEventListener("input", render);
       const fit = () => document.documentElement.style.setProperty("--hh", document.querySelector("header").offsetHeight + "px");
