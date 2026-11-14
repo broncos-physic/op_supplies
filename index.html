@@ -895,8 +895,9 @@
     <div class="hd"><h2>Lookup</h2><button id="qrClose" class="sec" type="button">Close</button></div>
     <div class="row r2">
       <div><label for="qrModel">Engine</label><input id="qrModel" type="text" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
-      <div><label for="qrKey">Key</label><input id="qrKey" type="password"  autocomplete="off"></div>
+      <div><label for="qrKey">Key</label><input id="qrKey" type="password" autocomplete="off"></div>
     </div>
+    <label for="qrUrl">Address</label><input id="qrUrl" type="text" placeholder="https://" autocomplete="off" autocapitalize="off" spellcheck="false">
     <label class="chk"><input id="qrWeb" type="checkbox" checked> Look up online</label>
     <div class="row r2">
       <div><label for="qrName">Product (name, size, brand, whatever you have)</label><input id="qrName" type="text" autocomplete="off"></div>
@@ -1165,12 +1166,14 @@
       function initQ() {
         const dlg = $("qrDlg");
         $("qrFab").hidden = false;
-        $("qrFab").onclick = () => { dlg.showModal(); ($("qrKey").value && $("qrModel").value ? $("qrName") : $("qrModel")).focus(); };
+        $("qrFab").onclick = () => { dlg.showModal(); ($("qrKey").value && $("qrModel").value && $("qrUrl").value ? $("qrName") : $("qrModel")).focus(); };
         $("qrClose").onclick = () => dlg.close();
         $("qrKey").value = store.get("sbl_k") || "";
+        $("qrUrl").value = store.get("sbl_u") || "";
         $("qrModel").value = store.get("sbl_m") || "";
         $("qrWeb").checked = store.get("sbl_w") !== "0";
         $("qrKey").oninput = e => store.set("sbl_k", e.target.value.trim() || null);
+        $("qrUrl").oninput = e => store.set("sbl_u", e.target.value.trim() || null);
         $("qrModel").oninput = e => store.set("sbl_m", e.target.value.trim() || null);
         $("qrWeb").onchange = e => store.set("sbl_w", e.target.checked ? "1" : "0");
         ["qrName", "qrRef"].forEach(id => $(id).addEventListener("keydown", e => { if (e.key === "Enter") runQ(); }));
@@ -1179,12 +1182,12 @@
 
       let QP = null;
 
-      async function ask(system, user, web, key, model) {
+      async function ask(system, user, web, key, model, url) {
         const body = { model, messages: [{ role: "system", content: system }, { role: "user", content: user }] };
         if (web) body.plugins = [{ id: "web", max_results: 5 }];
-        const res = await fetch(atob("aHR0cHM6Ly9vcGVucm91dGVyLmFpL2FwaS92MS9jaGF0L2NvbXBsZXRpb25z"), {
+        const res = await fetch(url, {
           method: "POST",
-          headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json", "X-Title": "Supply Bin Lookup" },
+          headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
           body: JSON.stringify(body)
         });
         const j = await res.json().catch(() => ({}));
@@ -1199,15 +1202,17 @@
       async function runQ() {
         const name = $("qrName").value.trim(), ref = $("qrRef").value.trim();
         const key = $("qrKey").value.trim(), model = $("qrModel").value.trim();
-        const out = $("qrOut"), go = $("qrGo"), web = $("qrWeb").checked;
+        const url = $("qrUrl").value.trim(), out = $("qrOut"), go = $("qrGo"), web = $("qrWeb").checked;
         const err = m => { out.innerHTML = `<div class="qr-card qr-err">${esc(String(m))}</div>`; };
-        const step = t => { out.innerHTML = `<div class="qr-card none">${t}</div>`; };
-        if (!key || !model) return err("Enter the engine and key first.");
+        let at = "";
+        const step = t => { at = t; out.innerHTML = `<div class="qr-card none">${t}</div>`; };
+        if (!key || !model || !/^https:\/\//i.test(url)) return err("Fill in the engine, key and address first.");
         if (!name && !ref) return err("Enter a product name or ref number.");
 
         go.disabled = true; go.textContent = "Working…";
         try {
           if (!QP) {
+            at = "loading qr-body.txt";
             const t = await fetch("qr-body.txt", { cache: "no-cache" });
             if (!t.ok) throw new Error("Couldn't load qr-body.txt (" + t.status + ")");
             const parts = (await t.text()).split(/^### ([ABC])[ \t]*$/m);
@@ -1219,7 +1224,7 @@
           let cites = [];
 
           step("Looking up the product…");
-          const A = await ask(QP.A, item, web, key, model);
+          const A = await ask(QP.A, item, web, key, model, url);
           cites = cites.concat(A.cites);
           const idf = A.obj || { name: name || ref, summary: A.txt.slice(0, 300) };
           const idText = `IDENTIFIED ITEM\nAs entered: ${name || "(not given)"} / ${ref || "(not given)"}\n${JSON.stringify(idf)}`;
@@ -1228,7 +1233,7 @@
           const list = ["id | category | bin | product | size | ref | cmop id | status flags | notes"].concat(
             DATA.map(r => [r.id, r[0], r[2], r[3], r[4], r[5], r[12], r.st, r[14]].map(x => x || "").join(" | "))
           ).join("\n");
-          const B = await ask(QP.B, `${idText}\n\nOUR LIST\n${list}`, false, key, model);
+          const B = await ask(QP.B, `${idText}\n\nOUR LIST\n${list}`, false, key, model, url);
           const ids = [...new Set(((B.obj && B.obj.shortlist) || []).map(Number))].filter(n => DATA[n]).slice(0, 5);
 
           if (!ids.length) {
@@ -1238,7 +1243,7 @@
 
           step("Checking the candidates online…");
           const cl = ids.map(n => { const r = DATA[n]; return [r.id, r[2], r[3], r[4], r[5], r.st, r[14]].map(x => x || "").join(" | "); }).join("\n");
-          const C = await ask(QP.C, `${idText}\n\nCANDIDATES\n${cl}`, web, key, model);
+          const C = await ask(QP.C, `${idText}\n\nCANDIDATES\n${cl}`, web, key, model, url);
           cites = cites.concat(C.cites);
           if (!C.obj) { out.innerHTML = `<div class="qr-card">${esc(C.txt || "Empty response.")}</div>`; return; }
           C.obj.identified = idf;
@@ -1246,7 +1251,10 @@
           C.obj.candidates = (C.obj.candidates || []).filter(c => ids.includes(+c.id));
           showQ(C.obj, cites);
         } catch (e) {
-          err(e.message || e);
+          const m = String(e.message || e);
+          err(/failed to fetch|networkerror|load failed/i.test(m)
+            ? `Network error while ${at.replace(/…$/, "").toLowerCase()}. The request never got a response: usually a blocker, firewall or offline connection.`
+            : m);
         } finally {
           go.disabled = false; go.textContent = "Find replacement";
         }
